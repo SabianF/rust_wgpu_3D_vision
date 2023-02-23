@@ -119,12 +119,15 @@ impl State {
   }
 }
 
-pub fn run() {
+pub async fn run() {
   env_logger::init();
 
   let event_loop = EventLoop::new();
+
   let window = Window::new(&event_loop).unwrap();
   window.set_title("2D Object Renderer");
+
+  let mut state = State::new(window).await;
 
   event_loop.run(move |event, _, control_flow| {
       *control_flow = ControlFlow::Wait;
