@@ -11,4 +11,5 @@ A voxel renderer aimed at simulating stereoscopic 4D vision
 1. I've reverted back to launching a functional empty window, and am now following the [official WGPU tutorial](https://sotrh.github.io/learn-wgpu/beginner/tutorial1-window/#the-code)
 
 ## From this repo
+1. Created resizeable window ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/094a5c9e4df79707d4df8df3e0bc1d2aa69d64f7))
 1. todo: rendering 2D shape
