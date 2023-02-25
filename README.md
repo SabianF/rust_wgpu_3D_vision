@@ -17,7 +17,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 
 ### Phase 1: Core functionality
 - [x] Creating a functional window
-- [ ] Rendering a colour
+- [x] Rendering a colour
 - [ ] Rendering a 2D surface (square)
 - [ ] Rendering a voxel (cube)
 - [ ] Rendering a 3D volume containing multiple voxels
