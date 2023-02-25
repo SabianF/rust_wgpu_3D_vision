@@ -43,5 +43,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 1. I've reverted back to launching a functional empty window, and am now following the [official WGPU tutorial](https://sotrh.github.io/learn-wgpu/beginner/tutorial1-window/#the-code)
 
 ## From this repo
-1. Created resizeable window ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/094a5c9e4df79707d4df8df3e0bc1d2aa69d64f7))
-1. todo: rendering colour
+1. done: Created resizeable window ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/094a5c9e4df79707d4df8df3e0bc1d2aa69d64f7))
+1. done: rendering colour ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/93f3ad42ea52b5713723b7eed49beac66c95aa25))
+   - <img src="https://user-images.githubusercontent.com/58588133/221382461-0ab01c86-9603-4a15-aa18-92feb14675d9.png" width="200" />
+1. todo: rendering 2D surface
