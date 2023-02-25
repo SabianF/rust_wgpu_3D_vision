@@ -6,9 +6,11 @@ A program to simulate stereoscopic 4D vision, using a virtual 3D retina which is
 
 If we display a 3D object on a 2D screen by rendering multiple layers (or voxels) of its outer and internal textures (like an MRI) fast enough to refresh all voxels composing the object 10-20 times per second (aka VPS or volumes-per-second), then our brains may interpret and process this 3D voxel space as true 3D vision.
 
-**Reasoning:** This would simulate photons hitting a 3D retina, and the brain should adapt and interpret this the same as it's already doing for the photons hitting your 2D retinas as you're reading this.
+**Reasoning:** The voxels would simulate 4D photons hitting a 3D retina, and the brain should process this the same as it's already doing for the 3D photons hitting your 2D retinas as you're reading this.
+  
+Essentially, this is using time (via [flicker fusion](https://en.wikipedia.org/wiki/Flicker_fusion_threshold)) to extend our 2-dimensional vision into 3D.
 
-If this works, then we can create 2 stereoscopic volumes shown from two different 4D angles (simulating two 3D retinas, or two 4D eyes), which the brain may interpret as 4D binocular vision, letting us perceive 4D depth.
+If this works, then not only will the brain perceive true 3D volume vision, but also we can create two virtual 3D screens which display from two different 4D angles (simulating two 3D retinas, or two 4D eyes), which the brain may process into 4D binocular vision, letting us perceive 4D parallax & depth.
 </details>
 
 Since this is my very first Rust project, the major steps to accomplishing this are
