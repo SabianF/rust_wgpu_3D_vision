@@ -113,15 +113,15 @@ impl State {
   }
 
   fn input(&mut self, event: &WindowEvent) -> bool {
-      todo!()
+      println!("State.input(): Unimplemented");
+      return false;
   }
 
-  fn update(&mut self) {
-      todo!()
-  }
+  fn update(&mut self) {}
 
   fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
-      todo!()
+    println!("State.render(): Unimplemented");
+      return Ok(());
   }
 }
 
@@ -139,9 +139,28 @@ pub async fn run() {
       *control_flow = ControlFlow::Wait;
       match event {
           Event::WindowEvent {
-              event: WindowEvent::CloseRequested,
-              ..
-          } => *control_flow = ControlFlow::Exit,
+              ref event,
+              window_id,
+          } if window_id == state.window().id() => {
+            if !state.input(event) {
+              match event {
+
+                WindowEvent::CloseRequested => {
+                  *control_flow = ControlFlow::Exit;
+                },
+
+                WindowEvent::Resized(physical_size) => {
+                  state.resize(*physical_size);
+                },
+
+                WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
+                  state.resize(**new_inner_size);
+                },
+
+                _ => {}
+              }
+            }
+          }
           _ => {}
       }
   });
