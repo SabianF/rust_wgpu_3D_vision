@@ -11,4 +11,4 @@ A voxel renderer aimed at simulating stereoscopic 4D vision
 1. I've reverted back to launching a functional empty window, and am now following the [official WGPU tutorial](https://sotrh.github.io/learn-wgpu/beginner/tutorial1-window/#the-code)
 
 ## From this repo
-1. todo
+1. todo: rendering 2D shape
