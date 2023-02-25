@@ -38,7 +38,7 @@ impl State {
     /*
      * The handle to the GPU
      */
-    let instance =wgpu::Instance::new(wgpu::InstanceDescriptor {
+    let instance = wgpu::Instance::new(wgpu::InstanceDescriptor {
       backends: wgpu::Backends::all(),
       dx12_shader_compiler: Default::default(),
     });
