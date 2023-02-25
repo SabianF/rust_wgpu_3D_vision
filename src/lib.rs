@@ -120,8 +120,44 @@ impl State {
   fn update(&mut self) {}
 
   fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
-    println!("State.render(): Unimplemented");
-      return Ok(());
+
+    let output = self.surface.get_current_texture()?;
+    let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
+
+    let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
+      label: Some("Render Encoder"),
+    });
+
+    // Since `begin_render_pass()` borrows `encoder` mutably (aka &mut self),
+    // we need to use a scoped block to release this mutable borrow, to call
+    // encoder.finish()
+    {
+      let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+        label: Some("Render Pass"),
+
+        color_attachments: &[Some(wgpu::RenderPassColorAttachment {
+            view          : &view,
+            resolve_target: None,
+
+            ops: wgpu::Operations {
+                load: wgpu::LoadOp::Clear(wgpu::Color {
+                    r: 0.1,
+                    g: 0.2,
+                    b: 0.3,
+                    a: 1.0,
+                }),
+
+                store: true,
+            },
+        })],
+
+        depth_stencil_attachment: None,
+      });
+    }
+
+    self.queue.submit(std::iter::once(encoder.finish()));
+    output.present();
+    return Ok(());
   }
 }
 
@@ -152,7 +188,6 @@ pub async fn run() {
                 WindowEvent::Resized(physical_size) => {
                   state.resize(*physical_size);
                 },
-
                 WindowEvent::ScaleFactorChanged { new_inner_size, .. } => {
                   state.resize(**new_inner_size);
                 },
@@ -161,6 +196,30 @@ pub async fn run() {
               }
             }
           }
+
+          // Rendering the surface
+          Event::RedrawRequested(window_id) if window_id == state.window().id() => {
+            state.update();
+            match state.render() {
+              Ok(_) => {}
+
+              // Reconfigure the surface if lost
+              Err(wgpu::SurfaceError::Lost) => state.resize(state.size),
+
+              // Prevent excess memory usage
+              Err(wgpu::SurfaceError::OutOfMemory) => *control_flow = ControlFlow::Exit,
+
+              // Handle all other errors
+              Err(e) => eprintln!("{:?}", e),
+            }
+          }
+
+          Event::MainEventsCleared => {
+            // Ensure RedrawRequested triggers only once, unless manually
+            // requested.
+            state.window().request_redraw();
+          }
+
           _ => {}
       }
   });
