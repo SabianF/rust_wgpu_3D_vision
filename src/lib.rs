@@ -113,7 +113,6 @@ impl State {
   }
 
   fn input(&mut self, event: &WindowEvent) -> bool {
-      println!("State.input(): Unimplemented");
       return false;
   }
 
