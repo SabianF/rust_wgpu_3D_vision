@@ -18,7 +18,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 ### Phase 1: Core functionality
 - [x] Creating a functional window
 - [x] Rendering a colour
-- [x] Rendering a 2D surface (square)
+- [x] Rendering a 2D surface (~~square~~ triangle)
 - [ ] Rendering a voxel (cube)
 - [ ] Rendering a 3D volume containing multiple voxels
 - [ ] Flickering the voxels at 1 layer of voxels per frame
