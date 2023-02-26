@@ -100,7 +100,7 @@ impl State {
   }
 
   pub fn window(&self) -> &Window {
-      &self.window
+      return &self.window;
   }
 
   fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
