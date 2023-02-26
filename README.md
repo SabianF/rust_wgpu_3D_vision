@@ -18,7 +18,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 ### Phase 1: Core functionality
 - [x] Creating a functional window
 - [x] Rendering a colour
-- [ ] Rendering a 2D surface (square)
+- [x] Rendering a 2D surface (square)
 - [ ] Rendering a voxel (cube)
 - [ ] Rendering a 3D volume containing multiple voxels
 - [ ] Flickering the voxels at 1 layer of voxels per frame
@@ -43,7 +43,9 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 1. I've reverted back to launching a functional empty window, and am now following the [official WGPU tutorial](https://sotrh.github.io/learn-wgpu/beginner/tutorial1-window/#the-code)
 
 ## From this repo
-1. done: Created resizeable window ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/094a5c9e4df79707d4df8df3e0bc1d2aa69d64f7))
-1. done: rendering colour ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/93f3ad42ea52b5713723b7eed49beac66c95aa25))
-   - <img src="https://user-images.githubusercontent.com/58588133/221382461-0ab01c86-9603-4a15-aa18-92feb14675d9.png" width="200" />
-1. todo: rendering 2D surface
+1. **done**: Created resizeable window ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/094a5c9e4df79707d4df8df3e0bc1d2aa69d64f7))
+1. **done**: rendering colour ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/93f3ad42ea52b5713723b7eed49beac66c95aa25))
+   - <img src="https://user-images.githubusercontent.com/58588133/221382461-0ab01c86-9603-4a15-aa18-92feb14675d9.png" width="256" />
+1. **done**: rendering 2D surface ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/ad066599d1c539dd1ce8ff6e829685ac643bc246))
+   - <img src="https://user-images.githubusercontent.com/58588133/221392828-99132655-2af0-4dca-bf61-5c1958d327b7.png" width="256" />
+1. todo: rendering 3D object
