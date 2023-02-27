@@ -1,4 +1,5 @@
 
+use wgpu::util::DeviceExt;
 use winit::{
   event::{Event, WindowEvent},
   event_loop::{ControlFlow, EventLoop},
@@ -21,7 +22,23 @@ struct State {
   size            : winit::dpi::PhysicalSize<u32>,
   window          : Window,
   render_pipeline : wgpu::RenderPipeline,
+  vertex_buffer   : wgpu::Buffer,
 }
+
+#[repr(C)]
+#[derive(Copy, Clone, Debug, bytemuck::Pod, bytemuck::Zeroable)]
+struct Vertex {
+  position: [f32; 3], // [X, Y, Z]
+  color   : [f32; 3], // [R, G, B]
+}
+
+const VERTICES: &[Vertex] = &[
+  // Defining vertices in CCW order as a std, because in render_pipeline
+  // we specified CCW as the front face, and to cull the back face
+  Vertex { position: [0.0 , 0.5, 0.0], color: [1.0, 0.0, 0.0], },
+  Vertex { position: [-0.5, 0.5, 0.0], color: [0.0, 1.0, 0.0], },
+  Vertex { position: [0.5 , 0.5, 0.0], color: [0.0, 0.0, 1.0], },
+];
 
 // ============================================================
 // Functions
@@ -166,6 +183,14 @@ impl State {
       },
     );
 
+    let vertex_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Vertex buffer"),
+        contents: bytemuck::cast_slice(VERTICES),
+        usage   : wgpu::BufferUsages::VERTEX,
+      },
+    );
+
     Self {
       window,
       surface,
@@ -174,6 +199,7 @@ impl State {
       config,
       size,
       render_pipeline,
+      vertex_buffer,
     }
   }
 
