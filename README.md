@@ -48,4 +48,6 @@ Since this is my very first Rust project, the major steps to accomplishing this 
    - <img src="https://user-images.githubusercontent.com/58588133/221382461-0ab01c86-9603-4a15-aa18-92feb14675d9.png" width="256" />
 1. **done**: rendering 2D surface ([commit](https://github.com/SabianF/rust_wgpu_3D_vision/commit/ad066599d1c539dd1ce8ff6e829685ac643bc246))
    - <img src="https://user-images.githubusercontent.com/58588133/221392828-99132655-2af0-4dca-bf61-5c1958d327b7.png" width="256" />
+   - Bonus: added temporary colour switching functionality (didn't commit)
+      - <img src="https://user-images.githubusercontent.com/58588133/221487748-ec90ceaa-b4f1-4fe6-8f0f-eeb0a1112a4b.png" width="256" />
 1. todo: rendering 3D object
