@@ -23,6 +23,7 @@ struct State {
   window          : Window,
   render_pipeline : wgpu::RenderPipeline,
   vertex_buffer   : wgpu::Buffer,
+  vertices_count  : u32,
 }
 
 #[repr(C)]
@@ -35,14 +36,30 @@ struct Vertex {
 const VERTICES: &[Vertex] = &[
   // Defining vertices in CCW order as a std, because in render_pipeline
   // we specified CCW as the front face, and to cull the back face
-  Vertex { position: [0.0 , 0.5, 0.0], color: [1.0, 0.0, 0.0], },
-  Vertex { position: [-0.5, 0.5, 0.0], color: [0.0, 1.0, 0.0], },
-  Vertex { position: [0.5 , 0.5, 0.0], color: [0.0, 0.0, 1.0], },
+  Vertex { position: [0.0 , 0.5 , 0.0], color: [1.0, 0.0, 0.0], },
+  Vertex { position: [-0.5, -0.5, 0.0], color: [0.0, 1.0, 0.0], },
+  Vertex { position: [0.5 , -0.5, 0.0], color: [0.0, 0.0, 1.0], },
 ];
 
 // ============================================================
 // Functions
 // ============================================================
+
+impl Vertex {
+
+  const ATTRIBUTES: [wgpu::VertexAttribute; 2] = wgpu::vertex_attr_array![
+    0 => Float32x3,
+    1 => Float32x3,
+  ];
+
+  fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
+    wgpu::VertexBufferLayout {
+      array_stride: std::mem::size_of::<Vertex>() as wgpu::BufferAddress,
+      step_mode   : wgpu::VertexStepMode::Vertex,
+      attributes  : &Self::ATTRIBUTES,
+    }
+  }
+}
 
 impl State {
 
@@ -131,7 +148,7 @@ impl State {
           // This tells `wgpu` what type of vertices to pass to the
           // vertex shader. Since we're specifying the vertices in the vertex
           // shader itself, empty is OK
-          buffers     : &[],
+          buffers     : &[ Vertex::desc(), ],
         },
 
         // Stores color data to the `surface`
@@ -191,6 +208,8 @@ impl State {
       },
     );
 
+    let vertices_count = VERTICES.len() as u32;
+
     Self {
       window,
       surface,
@@ -200,6 +219,7 @@ impl State {
       size,
       render_pipeline,
       vertex_buffer,
+      vertices_count,
     }
   }
 
@@ -258,7 +278,8 @@ impl State {
       });
 
       render_pass.set_pipeline(&self.render_pipeline);
-      render_pass.draw(0..3, 0..1);
+      render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
+      render_pass.draw(0..self.vertices_count, 0..1);
     }
 
     self.queue.submit(std::iter::once(encoder.finish()));
