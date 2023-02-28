@@ -86,20 +86,20 @@ const VERTICES: &[Vertex] = &[
 ];
 
 const CUBE_VERTICES: &[Vertex] = &[
-  Vertex { position: [-0.5, -0.5, 0.5 ], color: [0.5, 0.0, 0.5] }, // A: 0
-  Vertex { position: [0.5 , -0.5, 0.5 ], color: [0.5, 0.0, 0.5] }, // B: 1
-  Vertex { position: [0.5 , 0.5 , 0.5 ], color: [0.5, 0.0, 0.5] }, // C: 2
-  Vertex { position: [-0.5, 0.5 , 0.5 ], color: [0.5, 0.0, 0.5] }, // D: 3
-  Vertex { position: [-0.5, -0.5, -0.5], color: [0.5, 0.0, 0.5] }, // E: 4
+  Vertex { position: [-0.5, -0.5, 0.5 ], color: [0.0, 0.0, 0.0] }, // A: 0
+  Vertex { position: [0.5 , -0.5, 0.5 ], color: [0.0, 0.0, 0.5] }, // B: 1
+  Vertex { position: [0.5 , 0.5 , 0.5 ], color: [0.0, 0.5, 0.0] }, // C: 2
+  Vertex { position: [-0.5, 0.5 , 0.5 ], color: [0.0, 0.5, 0.5] }, // D: 3
+  Vertex { position: [-0.5, -0.5, -0.5], color: [0.5, 0.0, 0.0] }, // E: 4
   Vertex { position: [0.5 , -0.5, -0.5], color: [0.5, 0.0, 0.5] }, // F: 5
-  Vertex { position: [0.5 , 0.5 , -0.5], color: [0.5, 0.0, 0.5] }, // G: 6
-  Vertex { position: [-0.5, 0.5 , -0.5], color: [0.5, 0.0, 0.5] }, // H: 7
+  Vertex { position: [0.5 , 0.5 , -0.5], color: [0.5, 0.5, 0.0] }, // G: 6
+  Vertex { position: [-0.5, 0.5 , -0.5], color: [0.5, 0.5, 0.5] }, // H: 7
 ];
 
 const CUBE_INDICES: &[u16] = &[
   // Front
   0, 1, 2,
-  2, 3, 0,
+  0, 2, 3,
 
   // Top
   0, 4, 1,
@@ -114,12 +114,12 @@ const CUBE_INDICES: &[u16] = &[
   2, 7, 3,
 
   // Right
-  0, 4, 3,
-  4, 7, 3,
+  3, 4, 0,
+  3, 7, 4,
 
   // Back
-  4, 5, 6,
-  6, 7, 4,
+  6, 5, 4,
+  4, 7, 6,
 ];
 
 // ============================================================
