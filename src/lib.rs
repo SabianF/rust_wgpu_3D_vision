@@ -38,6 +38,18 @@ struct State {
   cube_indices_count: u32,
   object_selection      : u32, // 0=triangle, 1=cube
   camera                : Camera,
+  camera_buffer         : wgpu::Buffer,
+  camera_bind_group     : wgpu::BindGroup,
+}
+
+// This is needed to store data correctly for the shaders
+#[repr(C)]
+// This is needed to store data in a buffer
+#[derive(Debug, Copy, Clone, bytemuck::Pod, bytemuck::Zeroable)]
+struct CameraUniform {
+  // We can't use cgmath with bytemuck directly so we first have
+  // to convert the Matrix4 into a 4x4 f32 array
+  view_proj: [[f32; 4]; 4],
 }
 
 #[repr(C)]
@@ -103,6 +115,19 @@ const CUBE_INDICES: &[u16] = &[
 // ============================================================
 // Functions
 // ============================================================
+
+impl CameraUniform {
+  fn new() -> Self {
+      use cgmath::SquareMatrix;
+      Self {
+          view_proj: cgmath::Matrix4::identity().into(),
+      }
+  }
+
+  fn update_view_proj(&mut self, camera: &Camera) {
+      self.view_proj = camera.build_view_projection_matrix().into();
+  }
+}
 
 impl Camera {
   fn build_view_projection_matrix(&self) -> cgmath::Matrix4<f32> {
@@ -315,6 +340,58 @@ impl State {
       zfar: 100.0,
     };
 
+    let mut camera_uniform = CameraUniform::new();
+    camera_uniform.update_view_proj(&camera);
+
+    let camera_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Camera Buffer"),
+        contents: bytemuck::cast_slice(&[camera_uniform]),
+        usage   : wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+      },
+    );
+
+    let camera_bind_group_layout = device.create_bind_group_layout(
+      &wgpu::BindGroupLayoutDescriptor {
+        entries: &[
+          wgpu::BindGroupLayoutEntry {
+            binding: 0,
+            visibility: wgpu::ShaderStages::VERTEX,
+            ty: wgpu::BindingType::Buffer {
+              ty: wgpu::BufferBindingType::Uniform,
+              has_dynamic_offset: false,
+              min_binding_size: None,
+            },
+            count: None,
+          }
+        ],
+        label: Some("camera_bind_group_layout"),
+      },
+    );
+
+    let camera_bind_group = device.create_bind_group(
+      &wgpu::BindGroupDescriptor {
+        layout: &camera_bind_group_layout,
+        entries: &[
+          wgpu::BindGroupEntry {
+            binding: 0,
+            resource: camera_buffer.as_entire_binding(),
+          }
+        ],
+        label: Some("camera_bind_group"),
+      },
+    );
+
+    let render_pipeline_layout = device.create_pipeline_layout(
+      &wgpu::PipelineLayoutDescriptor {
+        label: Some("Render Pipeline Layout"),
+        bind_group_layouts: &[
+          &camera_bind_group_layout,
+        ],
+        push_constant_ranges: &[],
+      },
+    );
+
     Self {
       window,
       surface,
@@ -330,6 +407,8 @@ impl State {
       cube_indices_count,
       object_selection,
       camera,
+      camera_buffer,
+      camera_bind_group,
     }
   }
 
