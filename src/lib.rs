@@ -220,6 +220,62 @@ impl State {
 
     surface.configure(&device, &config);
 
+    let camera = Camera {
+      // position the camera one unit up and 2 units back
+      // +z is out of the screen
+      eye: (0.0, 1.0, 2.0).into(),
+      // have it look at the origin
+      target: (0.0, 0.0, 0.0).into(),
+      // which way is "up"
+      up: cgmath::Vector3::unit_y(),
+      aspect: config.width as f32 / config.height as f32,
+      fovy: 45.0,
+      znear: 0.1,
+      zfar: 100.0,
+    };
+
+    let mut camera_uniform = CameraUniform::new();
+    camera_uniform.update_view_proj(&camera);
+
+    let camera_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Camera Buffer"),
+        contents: bytemuck::cast_slice(&[camera_uniform]),
+        usage   : wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
+      },
+    );
+
+    let camera_bind_group_layout = device.create_bind_group_layout(
+      &wgpu::BindGroupLayoutDescriptor {
+        entries: &[
+          wgpu::BindGroupLayoutEntry {
+            binding: 0,
+            visibility: wgpu::ShaderStages::VERTEX,
+            ty: wgpu::BindingType::Buffer {
+              ty: wgpu::BufferBindingType::Uniform,
+              has_dynamic_offset: false,
+              min_binding_size: None,
+            },
+            count: None,
+          }
+        ],
+        label: Some("camera_bind_group_layout"),
+      },
+    );
+
+    let camera_bind_group = device.create_bind_group(
+      &wgpu::BindGroupDescriptor {
+        layout: &camera_bind_group_layout,
+        entries: &[
+          wgpu::BindGroupEntry {
+            binding: 0,
+            resource: camera_buffer.as_entire_binding(),
+          }
+        ],
+        label: Some("camera_bind_group"),
+      },
+    );
+
     let shader = device.create_shader_module(
       wgpu::include_wgsl!("shader.wgsl"),
     );
@@ -227,7 +283,7 @@ impl State {
     let render_pipeline_layout = device.create_pipeline_layout(
       &wgpu::PipelineLayoutDescriptor {
         label               : Some("Render pipeline layout"),
-        bind_group_layouts  : &[],
+        bind_group_layouts  : &[&camera_bind_group_layout],
         push_constant_ranges: &[],
       },
     );
@@ -326,72 +382,6 @@ impl State {
 
     let object_selection = 0;
 
-    let camera = Camera {
-      // position the camera one unit up and 2 units back
-      // +z is out of the screen
-      eye: (0.0, 1.0, 2.0).into(),
-      // have it look at the origin
-      target: (0.0, 0.0, 0.0).into(),
-      // which way is "up"
-      up: cgmath::Vector3::unit_y(),
-      aspect: config.width as f32 / config.height as f32,
-      fovy: 45.0,
-      znear: 0.1,
-      zfar: 100.0,
-    };
-
-    let mut camera_uniform = CameraUniform::new();
-    camera_uniform.update_view_proj(&camera);
-
-    let camera_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Camera Buffer"),
-        contents: bytemuck::cast_slice(&[camera_uniform]),
-        usage   : wgpu::BufferUsages::UNIFORM | wgpu::BufferUsages::COPY_DST,
-      },
-    );
-
-    let camera_bind_group_layout = device.create_bind_group_layout(
-      &wgpu::BindGroupLayoutDescriptor {
-        entries: &[
-          wgpu::BindGroupLayoutEntry {
-            binding: 0,
-            visibility: wgpu::ShaderStages::VERTEX,
-            ty: wgpu::BindingType::Buffer {
-              ty: wgpu::BufferBindingType::Uniform,
-              has_dynamic_offset: false,
-              min_binding_size: None,
-            },
-            count: None,
-          }
-        ],
-        label: Some("camera_bind_group_layout"),
-      },
-    );
-
-    let camera_bind_group = device.create_bind_group(
-      &wgpu::BindGroupDescriptor {
-        layout: &camera_bind_group_layout,
-        entries: &[
-          wgpu::BindGroupEntry {
-            binding: 0,
-            resource: camera_buffer.as_entire_binding(),
-          }
-        ],
-        label: Some("camera_bind_group"),
-      },
-    );
-
-    let render_pipeline_layout = device.create_pipeline_layout(
-      &wgpu::PipelineLayoutDescriptor {
-        label: Some("Render Pipeline Layout"),
-        bind_group_layouts: &[
-          &camera_bind_group_layout,
-        ],
-        push_constant_ranges: &[],
-      },
-    );
-
     Self {
       window,
       surface,
@@ -488,6 +478,12 @@ impl State {
       });
 
       render_pass.set_pipeline(&self.render_pipeline);
+
+      render_pass.set_bind_group(
+        0,
+        &self.camera_bind_group,
+        &[],
+      );
 
       match self.object_selection {
         0 => {
