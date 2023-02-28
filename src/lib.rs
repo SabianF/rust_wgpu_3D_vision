@@ -13,6 +13,15 @@ use wasm_bindgen::prelude::*;
 // Types
 // ============================================================
 
+struct Camera {
+  eye   : cgmath::Point3<f32>,
+  target: cgmath::Point3<f32>,
+  up    : cgmath::Vector3<f32>,
+  aspect: f32,
+  fovy  : f32,
+  znear : f32,
+  zfar  : f32,
+}
 
 struct State {
   surface               : wgpu::Surface,
@@ -28,6 +37,7 @@ struct State {
   cube_index_buffer : wgpu::Buffer,
   cube_indices_count: u32,
   object_selection      : u32, // 0=triangle, 1=cube
+  camera                : Camera,
 }
 
 #[repr(C)]
@@ -36,6 +46,14 @@ struct Vertex {
   position: [f32; 3], // [X, Y, Z]
   color   : [f32; 3], // [R, G, B]
 }
+
+#[rustfmt::skip]
+pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
+    1.0, 0.0, 0.0, 0.0,
+    0.0, 1.0, 0.0, 0.0,
+    0.0, 0.0, 0.5, 0.0,
+    0.0, 0.0, 0.5, 1.0,
+);
 
 const VERTICES: &[Vertex] = &[
   // Defining vertices in CCW order as a std, because in render_pipeline
@@ -85,6 +103,18 @@ const CUBE_INDICES: &[u16] = &[
 // ============================================================
 // Functions
 // ============================================================
+
+impl Camera {
+  fn build_view_projection_matrix(&self) -> cgmath::Matrix4<f32> {
+      // 1.
+      let view = cgmath::Matrix4::look_at_rh(self.eye, self.target, self.up);
+      // 2.
+      let proj = cgmath::perspective(cgmath::Deg(self.fovy), self.aspect, self.znear, self.zfar);
+
+      // 3.
+      return OPENGL_TO_WGPU_MATRIX * proj * view;
+  }
+}
 
 impl Vertex {
 
@@ -271,6 +301,20 @@ impl State {
 
     let object_selection = 0;
 
+    let camera = Camera {
+      // position the camera one unit up and 2 units back
+      // +z is out of the screen
+      eye: (0.0, 1.0, 2.0).into(),
+      // have it look at the origin
+      target: (0.0, 0.0, 0.0).into(),
+      // which way is "up"
+      up: cgmath::Vector3::unit_y(),
+      aspect: config.width as f32 / config.height as f32,
+      fovy: 45.0,
+      znear: 0.1,
+      zfar: 100.0,
+    };
+
     Self {
       window,
       surface,
@@ -285,6 +329,7 @@ impl State {
       cube_index_buffer,
       cube_indices_count,
       object_selection,
+      camera,
     }
   }
 
