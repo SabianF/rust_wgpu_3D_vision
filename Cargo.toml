@@ -15,11 +15,11 @@ path = "src/main.rs"
 [dependencies]
 bytemuck = { version = "1.12", features = [ "derive" ] }
 cfg-if = "1"
-winit = "0.27"
 env_logger = "0.10"
 log = "0.4"
-wgpu = "0.15"
 pollster = "0.2"
+winit = "0.27"
+wgpu = "0.15"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1.6"
