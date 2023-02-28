@@ -1,7 +1,7 @@
 
 use wgpu::util::DeviceExt;
 use winit::{
-  event::{Event, WindowEvent},
+  event::{Event, WindowEvent, KeyboardInput, ElementState, VirtualKeyCode},
   event_loop::{ControlFlow, EventLoop},
   window::{Window},
 };
@@ -15,15 +15,19 @@ use wasm_bindgen::prelude::*;
 
 
 struct State {
-  surface         : wgpu::Surface,
-  device          : wgpu::Device,
-  queue           : wgpu::Queue,
-  config          : wgpu::SurfaceConfiguration,
-  size            : winit::dpi::PhysicalSize<u32>,
-  window          : Window,
-  render_pipeline : wgpu::RenderPipeline,
-  vertex_buffer   : wgpu::Buffer,
-  vertices_count  : u32,
+  surface               : wgpu::Surface,
+  device                : wgpu::Device,
+  queue                 : wgpu::Queue,
+  config                : wgpu::SurfaceConfiguration,
+  size                  : winit::dpi::PhysicalSize<u32>,
+  window                : Window,
+  render_pipeline       : wgpu::RenderPipeline,
+  vertex_buffer         : wgpu::Buffer,
+  vertices_count        : u32,
+  cube_vertex_buffer: wgpu::Buffer,
+  cube_index_buffer : wgpu::Buffer,
+  cube_indices_count: u32,
+  object_selection      : u32, // 0=triangle, 1=cube
 }
 
 #[repr(C)]
@@ -39,6 +43,43 @@ const VERTICES: &[Vertex] = &[
   Vertex { position: [0.0 , 0.5 , 0.0], color: [1.0, 0.0, 0.0], },
   Vertex { position: [-0.5, -0.5, 0.0], color: [0.0, 1.0, 0.0], },
   Vertex { position: [0.5 , -0.5, 0.0], color: [0.0, 0.0, 1.0], },
+];
+
+const CUBE_VERTICES: &[Vertex] = &[
+  Vertex { position: [-0.5, -0.5, 0.5 ], color: [0.5, 0.0, 0.5] }, // A: 0
+  Vertex { position: [0.5 , -0.5, 0.5 ], color: [0.5, 0.0, 0.5] }, // B: 1
+  Vertex { position: [0.5 , 0.5 , 0.5 ], color: [0.5, 0.0, 0.5] }, // C: 2
+  Vertex { position: [-0.5, 0.5 , 0.5 ], color: [0.5, 0.0, 0.5] }, // D: 3
+  Vertex { position: [-0.5, -0.5, -0.5], color: [0.5, 0.0, 0.5] }, // E: 4
+  Vertex { position: [0.5 , -0.5, -0.5], color: [0.5, 0.0, 0.5] }, // F: 5
+  Vertex { position: [0.5 , 0.5 , -0.5], color: [0.5, 0.0, 0.5] }, // G: 6
+  Vertex { position: [-0.5, 0.5 , -0.5], color: [0.5, 0.0, 0.5] }, // H: 7
+];
+
+const CUBE_INDICES: &[u16] = &[
+  // Front
+  0, 1, 2,
+  2, 3, 0,
+
+  // Top
+  0, 4, 1,
+  1, 4, 5,
+
+  // Left
+  1, 5, 2,
+  2, 5, 6,
+
+  // Bottom
+  2, 6, 7,
+  2, 7, 3,
+
+  // Right
+  0, 4, 3,
+  4, 7, 3,
+
+  // Back
+  4, 5, 6,
+  6, 7, 4,
 ];
 
 // ============================================================
@@ -210,6 +251,26 @@ impl State {
 
     let vertices_count = VERTICES.len() as u32;
 
+    let cube_vertex_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Cube vertex buffer"),
+        contents: bytemuck::cast_slice(CUBE_VERTICES),
+        usage   : wgpu::BufferUsages::VERTEX,
+      },
+    );
+
+    let cube_index_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Cube index buffer"),
+        contents: bytemuck::cast_slice(CUBE_INDICES),
+        usage   : wgpu::BufferUsages::INDEX,
+      },
+    );
+
+    let cube_indices_count = CUBE_INDICES.len() as u32;
+
+    let object_selection = 0;
+
     Self {
       window,
       surface,
@@ -220,6 +281,10 @@ impl State {
       render_pipeline,
       vertex_buffer,
       vertices_count,
+      cube_vertex_buffer,
+      cube_index_buffer,
+      cube_indices_count,
+      object_selection,
     }
   }
 
@@ -237,7 +302,28 @@ impl State {
   }
 
   fn input(&mut self, event: &WindowEvent) -> bool {
-    return false;
+    match event {
+      WindowEvent::KeyboardInput {
+        input: KeyboardInput {
+            state: ElementState::Pressed,
+            virtual_keycode,
+            ..
+        },
+        ..
+      } => if virtual_keycode == &Some(VirtualKeyCode::Key0) {
+        self.object_selection = 0;
+        return true;
+
+      } else if virtual_keycode == &Some(VirtualKeyCode::Key1) {
+        self.object_selection = 1;
+        return true;
+
+      } else {
+        return false;
+      },
+
+      _ => return false,
+    };
   }
 
   fn update(&mut self) {}
@@ -278,8 +364,37 @@ impl State {
       });
 
       render_pass.set_pipeline(&self.render_pipeline);
-      render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
-      render_pass.draw(0..self.vertices_count, 0..1);
+
+      match self.object_selection {
+        0 => {
+          render_pass.set_vertex_buffer(
+            0,
+            self.vertex_buffer.slice(..),
+          );
+          render_pass.draw(
+            0..self.vertices_count,
+            0..1,
+          );
+        },
+
+        1 => {
+          render_pass.set_vertex_buffer(
+            0,
+            self.cube_vertex_buffer.slice(..),
+          );
+          render_pass.set_index_buffer(
+            self.cube_index_buffer.slice(..),
+            wgpu::IndexFormat::Uint16,
+          );
+          render_pass.draw_indexed(
+            0..self.cube_indices_count,
+            0,
+            0..1,
+          );
+        },
+
+        _ => {},
+      }
     }
 
     self.queue.submit(std::iter::once(encoder.finish()));
