@@ -322,7 +322,7 @@ impl State {
       surface,
       device,
       queue,
-      config
+      config,
     ) = configure_surface(&window).await;
 
     let (
@@ -337,13 +337,13 @@ impl State {
     let render_pipeline = configure_render_pipeline(
       &device,
       camera_bind_group_layout,
-      &config
+      &config,
     );
 
     let (
       cube_vertex_buffer,
       cube_index_buffer,
-      cube_indices_count
+      cube_indices_count,
     ) = define_cube(&device);
 
     let instances = (0..NUM_INSTANCES_PER_ROW)
