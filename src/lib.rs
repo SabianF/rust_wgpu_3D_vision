@@ -346,49 +346,10 @@ impl State {
       cube_indices_count,
     ) = define_cube(&device);
 
-    let instances = (0..NUM_INSTANCES_PER_ROW)
-      .flat_map(|z| {
-        (0..NUM_INSTANCES_PER_ROW).map(move |x| {
-          let position = cgmath::Vector3 {
-            x: x as f32,
-            y: 0.0,
-            z: z as f32
-          } - INSTANCE_SPACING;
-
-          let rotation = if position.is_zero() {
-            // this is needed so an object at (0, 0, 0) won't get scaled to zero
-            // as Quaternions can effect scale if they're not created correctly
-            cgmath::Quaternion::from_axis_angle(
-              cgmath::Vector3::unit_z(),
-              cgmath::Deg(0.0)
-            )
-          } else {
-            cgmath::Quaternion::from_axis_angle(
-              position.normalize(),
-              cgmath::Deg(45.0)
-            )
-          };
-
-          return Instance {
-            position,
-            rotation,
-          };
-        })
-      })
-      .collect::<Vec<_>>();
-
-    let instance_data = instances
-      .iter()
-      .map(Instance::to_raw)
-      .collect::<Vec<_>>();
-
-    let instance_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Instance buffer"),
-        contents: bytemuck::cast_slice(&instance_data),
-        usage   : wgpu::BufferUsages::VERTEX,
-      },
-    );
+    let (
+      instances,
+      instance_buffer,
+    ) = configure_instances(&device);
 
     Self {
       window,
@@ -502,6 +463,60 @@ impl State {
     output.present();
     return Ok(());
   }
+}
+
+fn configure_instances(device: &wgpu::Device) -> (
+  Vec<Instance>,
+  wgpu::Buffer,
+) {
+  let instances = (0..NUM_INSTANCES_PER_ROW)
+    .flat_map(|z| {
+      (0..NUM_INSTANCES_PER_ROW).map(move |x| {
+        let position = cgmath::Vector3 {
+          x: x as f32,
+          y: 0.0,
+          z: z as f32
+        } - INSTANCE_SPACING;
+
+        let rotation = if position.is_zero() {
+          // this is needed so an object at (0, 0, 0) won't get scaled to zero
+          // as Quaternions can effect scale if they're not created correctly
+          cgmath::Quaternion::from_axis_angle(
+            cgmath::Vector3::unit_z(),
+            cgmath::Deg(0.0)
+          )
+        } else {
+          cgmath::Quaternion::from_axis_angle(
+            position.normalize(),
+            cgmath::Deg(45.0)
+          )
+        };
+
+        return Instance {
+          position,
+          rotation,
+        };
+      })
+    })
+    .collect::<Vec<_>>();
+
+  let instance_data = instances
+    .iter()
+    .map(Instance::to_raw)
+    .collect::<Vec<_>>();
+
+  let instance_buffer = device.create_buffer_init(
+    &wgpu::util::BufferInitDescriptor {
+      label   : Some("Instance buffer"),
+      contents: bytemuck::cast_slice(&instance_data),
+      usage   : wgpu::BufferUsages::VERTEX,
+    },
+  );
+
+  return (
+    instances,
+    instance_buffer,
+  );
 }
 
 /**
