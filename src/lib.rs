@@ -339,23 +339,11 @@ impl State {
       &config
     );
 
-    let cube_vertex_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Cube vertex buffer"),
-        contents: bytemuck::cast_slice(CUBE_VERTICES),
-        usage   : wgpu::BufferUsages::VERTEX,
-      },
-    );
-
-    let cube_index_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Cube index buffer"),
-        contents: bytemuck::cast_slice(CUBE_INDICES),
-        usage   : wgpu::BufferUsages::INDEX,
-      },
-    );
-
-    let cube_indices_count = CUBE_INDICES.len() as u32;
+    let (
+      cube_vertex_buffer,
+      cube_index_buffer,
+      cube_indices_count
+    ) = define_cube(&device);
 
     let camera_controller = CameraController::new(0.2);
 
@@ -515,6 +503,39 @@ impl State {
     output.present();
     return Ok(());
   }
+}
+
+/**
+ * Defines vertices & indices buffers for a cube
+ */
+fn define_cube(device: &wgpu::Device) -> (
+  wgpu::Buffer,
+  wgpu::Buffer,
+  u32,
+) {
+  let cube_vertex_buffer = device.create_buffer_init(
+    &wgpu::util::BufferInitDescriptor {
+      label   : Some("Cube vertex buffer"),
+      contents: bytemuck::cast_slice(CUBE_VERTICES),
+      usage   : wgpu::BufferUsages::VERTEX,
+    },
+  );
+
+  let cube_index_buffer = device.create_buffer_init(
+    &wgpu::util::BufferInitDescriptor {
+      label   : Some("Cube index buffer"),
+      contents: bytemuck::cast_slice(CUBE_INDICES),
+      usage   : wgpu::BufferUsages::INDEX,
+    },
+  );
+
+  let cube_indices_count = CUBE_INDICES.len() as u32;
+
+  return (
+    cube_vertex_buffer,
+    cube_index_buffer,
+    cube_indices_count
+  );
 }
 
 /**
