@@ -333,83 +333,10 @@ impl State {
       camera_bind_group
     ) = configure_camera(&config, &device);
 
-    let shader = device.create_shader_module(
-      wgpu::include_wgsl!("shader.wgsl"),
-    );
-
-    let render_pipeline_layout = device.create_pipeline_layout(
-      &wgpu::PipelineLayoutDescriptor {
-        label               : Some("Render pipeline layout"),
-        bind_group_layouts  : &[&camera_bind_group_layout],
-        push_constant_ranges: &[],
-      },
-    );
-
-    let render_pipeline = device.create_render_pipeline(
-      &wgpu::RenderPipelineDescriptor {
-        label : Some("Render pipeline"),
-        layout: Some(&render_pipeline_layout),
-
-        vertex: wgpu::VertexState {
-          module      : &shader,
-          entry_point : "vs_main",
-
-          // This tells `wgpu` what type of vertices to pass to the
-          // vertex shader. Since we're specifying the vertices in the vertex
-          // shader itself, empty is OK
-          buffers: &[
-            Vertex::desc(),
-            InstanceRaw::desc(),
-          ],
-        },
-
-        // Stores color data to the `surface`
-        fragment: Some(wgpu::FragmentState {
-          module      : &shader,
-          entry_point : "fs_main",
-
-          // Tells `wgpu` what color outputs it should set up. Currently,
-          // we only need one for the surface.
-          targets: &[Some(wgpu::ColorTargetState {
-
-            // Uses the `surface` format so copying to it is easy
-            format: config.format,
-
-            // Tells the blending to replace old pixel data with new data
-            blend: Some(wgpu::BlendState::REPLACE),
-
-            // Tells `wgpu` to write to all colors: red, blue, green, alpha
-            write_mask: wgpu::ColorWrites::ALL,
-          })],
-        }),
-
-        primitive: wgpu::PrimitiveState {
-
-          // Makes every three vertices correspond to one triangle
-          topology          : wgpu::PrimitiveTopology::TriangleList,
-          strip_index_format: None,
-
-          // Defines the forward direction
-          front_face: wgpu::FrontFace::Ccw,
-
-          // Culls triangles which are not facing forward
-          cull_mode: Some(wgpu::Face::Back),
-
-          unclipped_depth   : false,
-          polygon_mode      : wgpu::PolygonMode::Fill,
-          conservative      : false,
-        },
-
-        depth_stencil : None,
-
-        multisample: wgpu::MultisampleState {
-          count : 1,
-          mask  : !0,
-          alpha_to_coverage_enabled: false,
-        },
-
-        multiview: None,
-      },
+    let render_pipeline = configure_render_pipeline(
+      &device,
+      camera_bind_group_layout,
+      &config
     );
 
     let cube_vertex_buffer = device.create_buffer_init(
@@ -588,6 +515,96 @@ impl State {
     output.present();
     return Ok(());
   }
+}
+
+/**
+ * Configures the shaders and render pipeline
+ */
+fn configure_render_pipeline(
+  device: &wgpu::Device,
+  camera_bind_group_layout: wgpu::BindGroupLayout,
+  config: &SurfaceConfiguration,
+) -> wgpu::RenderPipeline {
+    let shader = device.create_shader_module(
+      wgpu::include_wgsl!("shader.wgsl"),
+    );
+
+    let render_pipeline_layout = device.create_pipeline_layout(
+      &wgpu::PipelineLayoutDescriptor {
+        label               : Some("Render pipeline layout"),
+        bind_group_layouts  : &[&camera_bind_group_layout],
+        push_constant_ranges: &[],
+      },
+    );
+
+    let render_pipeline = device.create_render_pipeline(
+      &wgpu::RenderPipelineDescriptor {
+        label : Some("Render pipeline"),
+        layout: Some(&render_pipeline_layout),
+
+        vertex: wgpu::VertexState {
+          module      : &shader,
+          entry_point : "vs_main",
+
+          // This tells `wgpu` what type of vertices to pass to the
+          // vertex shader. Since we're specifying the vertices in the vertex
+          // shader itself, empty is OK
+          buffers: &[
+            Vertex::desc(),
+            InstanceRaw::desc(),
+          ],
+        },
+
+        // Stores color data to the `surface`
+        fragment: Some(wgpu::FragmentState {
+          module      : &shader,
+          entry_point : "fs_main",
+
+          // Tells `wgpu` what color outputs it should set up. Currently,
+          // we only need one for the surface.
+          targets: &[Some(wgpu::ColorTargetState {
+
+            // Uses the `surface` format so copying to it is easy
+            format: config.format,
+
+            // Tells the blending to replace old pixel data with new data
+            blend: Some(wgpu::BlendState::REPLACE),
+
+            // Tells `wgpu` to write to all colors: red, blue, green, alpha
+            write_mask: wgpu::ColorWrites::ALL,
+          })],
+        }),
+
+        primitive: wgpu::PrimitiveState {
+
+          // Makes every three vertices correspond to one triangle
+          topology          : wgpu::PrimitiveTopology::TriangleList,
+          strip_index_format: None,
+
+          // Defines the forward direction
+          front_face: wgpu::FrontFace::Ccw,
+
+          // Culls triangles which are not facing forward
+          cull_mode: Some(wgpu::Face::Back),
+
+          unclipped_depth   : false,
+          polygon_mode      : wgpu::PolygonMode::Fill,
+          conservative      : false,
+        },
+
+        depth_stencil : None,
+
+        multisample: wgpu::MultisampleState {
+          count : 1,
+          mask  : !0,
+          alpha_to_coverage_enabled: false,
+        },
+
+        multiview: None,
+      },
+    );
+    
+    return render_pipeline;
 }
 
 /**
