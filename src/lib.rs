@@ -40,8 +40,6 @@ struct State {
   size              : winit::dpi::PhysicalSize<u32>,
   window            : Window,
   render_pipeline   : wgpu::RenderPipeline,
-  vertex_buffer     : wgpu::Buffer,
-  vertices_count    : u32,
   cube_vertex_buffer: wgpu::Buffer,
   cube_index_buffer : wgpu::Buffer,
   cube_indices_count: u32,
@@ -77,14 +75,6 @@ pub const OPENGL_TO_WGPU_MATRIX: cgmath::Matrix4<f32> = cgmath::Matrix4::new(
     0.0, 0.0, 0.5, 0.0,
     0.0, 0.0, 0.5, 1.0,
 );
-
-const VERTICES: &[Vertex] = &[
-  // Defining vertices in CCW order as a std, because in render_pipeline
-  // we specified CCW as the front face, and to cull the back face
-  Vertex { position: [0.0 , 0.5 , 0.0], color: [1.0, 0.0, 0.0], },
-  Vertex { position: [-0.5, -0.5, 0.0], color: [0.0, 1.0, 0.0], },
-  Vertex { position: [0.5 , -0.5, 0.0], color: [0.0, 0.0, 1.0], },
-];
 
 const CUBE_VERTICES: &[Vertex] = &[
   Vertex { position: [-0.5, -0.5, 0.5 ], color: [0.0, 0.0, 0.0] }, // A: 0
@@ -443,16 +433,6 @@ impl State {
       },
     );
 
-    let vertex_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Vertex buffer"),
-        contents: bytemuck::cast_slice(VERTICES),
-        usage   : wgpu::BufferUsages::VERTEX,
-      },
-    );
-
-    let vertices_count = VERTICES.len() as u32;
-
     let cube_vertex_buffer = device.create_buffer_init(
       &wgpu::util::BufferInitDescriptor {
         label   : Some("Cube vertex buffer"),
@@ -483,8 +463,6 @@ impl State {
       config,
       size,
       render_pipeline,
-      vertex_buffer,
-      vertices_count,
       cube_vertex_buffer,
       cube_index_buffer,
       cube_indices_count,
@@ -512,28 +490,7 @@ impl State {
 
   fn input(&mut self, event: &WindowEvent) -> bool {
     self.camera_controller.process_events(event);
-    match event {
-      WindowEvent::KeyboardInput {
-        input: KeyboardInput {
-            state: ElementState::Pressed,
-            virtual_keycode,
-            ..
-        },
-        ..
-      } => if virtual_keycode == &Some(VirtualKeyCode::Key0) {
-        self.object_selection = 0;
-        return true;
-
-      } else if virtual_keycode == &Some(VirtualKeyCode::Key1) {
-        self.object_selection = 1;
-        return true;
-
-      } else {
-        return false;
-      },
-
-      _ => return false,
-    };
+    return false;
   }
 
   fn update(&mut self) {
@@ -586,36 +543,19 @@ impl State {
         &[],
       );
 
-      match self.object_selection {
-        0 => {
-          render_pass.set_vertex_buffer(
-            0,
-            self.vertex_buffer.slice(..),
-          );
-          render_pass.draw(
-            0..self.vertices_count,
-            0..1,
-          );
-        },
-
-        1 => {
-          render_pass.set_vertex_buffer(
-            0,
-            self.cube_vertex_buffer.slice(..),
-          );
-          render_pass.set_index_buffer(
-            self.cube_index_buffer.slice(..),
-            wgpu::IndexFormat::Uint16,
-          );
-          render_pass.draw_indexed(
-            0..self.cube_indices_count,
-            0,
-            0..1,
-          );
-        },
-
-        _ => {},
-      }
+      render_pass.set_vertex_buffer(
+        0,
+        self.cube_vertex_buffer.slice(..),
+      );
+      render_pass.set_index_buffer(
+        self.cube_index_buffer.slice(..),
+        wgpu::IndexFormat::Uint16,
+      );
+      render_pass.draw_indexed(
+        0..self.cube_indices_count,
+        0,
+        0..1,
+      );
     }
 
     self.queue.submit(std::iter::once(encoder.finish()));
