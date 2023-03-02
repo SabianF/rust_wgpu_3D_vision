@@ -33,24 +33,24 @@ struct CameraController {
 }
 
 struct State {
-  surface               : wgpu::Surface,
-  device                : wgpu::Device,
-  queue                 : wgpu::Queue,
-  config                : wgpu::SurfaceConfiguration,
-  size                  : winit::dpi::PhysicalSize<u32>,
-  window                : Window,
-  render_pipeline       : wgpu::RenderPipeline,
-  vertex_buffer         : wgpu::Buffer,
-  vertices_count        : u32,
+  surface           : wgpu::Surface,
+  device            : wgpu::Device,
+  queue             : wgpu::Queue,
+  config            : wgpu::SurfaceConfiguration,
+  size              : winit::dpi::PhysicalSize<u32>,
+  window            : Window,
+  render_pipeline   : wgpu::RenderPipeline,
+  vertex_buffer     : wgpu::Buffer,
+  vertices_count    : u32,
   cube_vertex_buffer: wgpu::Buffer,
   cube_index_buffer : wgpu::Buffer,
   cube_indices_count: u32,
-  object_selection      : u32, // 0=triangle, 1=cube
-  camera                : Camera,
-  camera_uniform        : CameraUniform,
-  camera_buffer         : wgpu::Buffer,
-  camera_bind_group     : wgpu::BindGroup,
-  camera_controller     : CameraController,
+  object_selection  : u32, // 0=triangle, 1=cube
+  camera            : Camera,
+  camera_uniform    : CameraUniform,
+  camera_buffer     : wgpu::Buffer,
+  camera_bind_group : wgpu::BindGroup,
+  camera_controller : CameraController,
 }
 
 // This is needed to store data correctly for the shaders
