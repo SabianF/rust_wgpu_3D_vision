@@ -44,7 +44,6 @@ struct State {
   cube_vertex_buffer: wgpu::Buffer,
   cube_index_buffer : wgpu::Buffer,
   cube_indices_count: u32,
-  object_selection  : u32, // 0=triangle, 1=cube
   camera            : Camera,
   camera_uniform    : CameraUniform,
   camera_buffer     : wgpu::Buffer,
@@ -147,7 +146,6 @@ const INSTANCE_SPACING: cgmath::Vector3<f32> = cgmath::Vector3::new(
 
 impl CameraUniform {
   fn new() -> Self {
-      use cgmath::SquareMatrix;
       Self {
           view_proj: cgmath::Matrix4::identity().into(),
       }
@@ -217,7 +215,6 @@ impl CameraController {
   }
 
   fn update_camera(&self, camera: &mut Camera) {
-    use cgmath::InnerSpace;
     let forward = camera.target - camera.eye;
     let forward_norm = forward.normalize();
     let forward_mag = forward.magnitude();
@@ -533,8 +530,6 @@ impl State {
 
     let cube_indices_count = CUBE_INDICES.len() as u32;
 
-    let object_selection = 0;
-
     let camera_controller = CameraController::new(0.2);
 
     let instances = (0..NUM_INSTANCES_PER_ROW)
@@ -592,7 +587,6 @@ impl State {
       cube_vertex_buffer,
       cube_index_buffer,
       cube_indices_count,
-      object_selection,
       camera,
       camera_uniform,
       camera_buffer,
