@@ -330,7 +330,8 @@ impl State {
       camera_uniform,
       camera_buffer,
       camera_bind_group_layout,
-      camera_bind_group
+      camera_bind_group,
+      camera_controller,
     ) = configure_camera(&config, &device);
 
     let render_pipeline = configure_render_pipeline(
@@ -344,8 +345,6 @@ impl State {
       cube_index_buffer,
       cube_indices_count
     ) = define_cube(&device);
-
-    let camera_controller = CameraController::new(0.2);
 
     let instances = (0..NUM_INSTANCES_PER_ROW)
       .flat_map(|z| {
@@ -711,6 +710,7 @@ fn configure_camera(
   wgpu::Buffer,
   wgpu::BindGroupLayout,
   wgpu::BindGroup,
+  CameraController,
 ) {
     let camera = Camera {
       // position the camera one unit up and 2 units back
@@ -769,12 +769,15 @@ fn configure_camera(
       },
     );
 
+  let camera_controller = CameraController::new(0.2);
+
   return (
     camera,
     camera_uniform,
     camera_buffer,
     camera_bind_group_layout,
     camera_bind_group,
+    camera_controller,
   )
 }
 
