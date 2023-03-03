@@ -20,7 +20,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 - [x] Rendering a colour
 - [x] Rendering a 2D surface (~~square~~ triangle)
 - [x] Rendering a voxel (cube)
-- [ ] Rendering a 3D volume containing multiple voxels
+- [x] Rendering a 3D volume containing multiple voxels
 - [ ] Flickering the voxels at 1 layer of voxels per frame
 
 ### Phase 2: 3D angle-viewing
@@ -52,4 +52,6 @@ Since this is my very first Rust project, the major steps to accomplishing this 
       - <img src="https://user-images.githubusercontent.com/58588133/221487748-ec90ceaa-b4f1-4fe6-8f0f-eeb0a1112a4b.png" width="256" />
 1. **done**: rendering 3D object
    - <img src="https://user-images.githubusercontent.com/58588133/221772063-2e042702-97d3-44c8-8037-69c75213bb1e.gif" width="256" alt="rust_cube_rotating" />
-1. todo: optimizing camera controls
+1. **done**: ~~optimizing camera controls~~ rendering multiple instances of cubes
+   - <img src="https://user-images.githubusercontent.com/58588133/222606065-34011ff6-2b57-482e-a42f-a08f6f93c0b9.gif" width="256" alt="rust_cubes_rotating" />
+1. todo: rendering cubes on y-axis
