@@ -17,6 +17,7 @@ bytemuck = { version = "1.12", features = [ "derive" ] }
 cfg-if = "1"
 cgmath = "0.18"
 env_logger = "0.10"
+game-loop = { version = "*", features = ["winit"] }
 log = "0.4"
 pollster = "0.2"
 winit = "0.27"
