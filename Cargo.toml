@@ -13,14 +13,22 @@ path = "src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+# For storing buffers to be used in shaders
 bytemuck = { version = "1.12", features = [ "derive" ] }
+# For enabling WASM compatibility
 cfg-if = "1"
+# For calculating vertex positions during rotations of objects
 cgmath = "0.18"
+# For helpful log details
 env_logger = "0.10"
+# For keeping the updating of values independent from the CPU clock
 game-loop = { version = "*", features = ["winit"] }
+# For logging I guess
 log = "0.4"
 pollster = "0.2"
+# For window management functions
 winit = "0.27"
+# For cross-platform rendering
 wgpu = "0.15"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
