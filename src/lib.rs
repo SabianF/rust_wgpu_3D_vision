@@ -142,8 +142,8 @@ const CUBE_INDICES: &[u16] = &[
   4, 7, 6,
 ];
 
-const NUM_INSTANCES_PER_ROW: u32 = 5;
-const NUM_INSTANCE_ROWS: u32 = 5;
+const NUM_INSTANCES_PER_ROW: u32 = 3;
+const NUM_INSTANCE_ROWS: u32 = 3;
 const INSTANCE_SPACING: cgmath::Vector3<f32> = cgmath::Vector3::new(
   NUM_INSTANCES_PER_ROW as f32 * 0.5,
   NUM_INSTANCE_ROWS as f32 * 0.5,
@@ -470,52 +470,38 @@ impl State {
 
   fn input(&mut self, event: &WindowEvent) -> bool {
     self.camera_controller.process_events(event);
-
-    match event {
-
-      WindowEvent::KeyboardInput {
-        input: KeyboardInput {
-            state: ElementState::Pressed,
-            virtual_keycode,
-            ..
-        },
-        ..
-      } => if virtual_keycode == &Some(VirtualKeyCode::Key1) {
-        let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
-        let range_end_max = self.instances.len() as u32;
-        let range_start_max = range_end_max - range_increment_amount;
-
-        let range_end_min = range_increment_amount;
-        let range_start_min = 0;
-
-        if self.instances_to_render_start + range_increment_amount <= range_start_max {
-          self.instances_to_render_start += range_increment_amount;
-        } else {
-          self.instances_to_render_start = range_start_min;
-        }
-        if self.instances_to_render_end + range_increment_amount <= range_end_max {
-          self.instances_to_render_end += range_increment_amount;
-        } else {
-          self.instances_to_render_end = range_end_min;
-        }
-
-        return true;
-      },
-
-      _ => return false
-    };
-
     return false;
+  }
+
+  fn iterate_volume_plane_instances_to_render(&mut self) {
+    let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
+    let range_end_max = self.instances.len() as u32;
+    let range_start_max = range_end_max - range_increment_amount;
+
+    let range_end_min = range_increment_amount;
+    let range_start_min = 0;
+
+    if self.instances_to_render_start + range_increment_amount <= range_start_max {
+      self.instances_to_render_start += range_increment_amount;
+    } else {
+      self.instances_to_render_start = range_start_min;
+    }
+    if self.instances_to_render_end + range_increment_amount <= range_end_max {
+      self.instances_to_render_end += range_increment_amount;
+    } else {
+      self.instances_to_render_end = range_end_min;
+    }
   }
 
   fn update(&mut self) {
     self.camera_controller.update_camera(&mut self.camera);
     self.camera_uniform.update_view_proj(&self.camera);
     self.queue.write_buffer(&self.camera_buffer, 0, bytemuck::cast_slice(&[self.camera_uniform]));
-
   }
 
   fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
+
+    self.iterate_volume_plane_instances_to_render();
 
     let output = self.surface.get_current_texture()?;
     let view = output.texture.create_view(&wgpu::TextureViewDescriptor::default());
@@ -603,7 +589,7 @@ pub async fn run() {
   let mut state = State::new(window).await;
 
   event_loop.run(move |event, _, control_flow| {
-    *control_flow = ControlFlow::Wait;
+    *control_flow = ControlFlow::Poll;
     match event {
       Event::WindowEvent {
         ref event,
@@ -643,6 +629,7 @@ pub async fn run() {
           // Handle all other errors
           Err(e) => eprintln!("{:?}", e),
         }
+        state.window().request_redraw();
       }
 
       Event::MainEventsCleared => {
