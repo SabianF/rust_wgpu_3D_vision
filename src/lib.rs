@@ -52,6 +52,8 @@ struct State {
   instances         : Vec<Instance>,
   instance_buffer   : wgpu::Buffer,
   depth_texture     : Texture,
+  instances_to_render_start: u32,
+  instances_to_render_end: u32,
 }
 
 // This is needed to store data correctly for the shaders
@@ -419,6 +421,9 @@ impl State {
       "depth_texture",
     );
 
+    let instances_to_render_start = 0;
+    let instances_to_render_end = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
+
     Self {
       window,
       surface,
@@ -438,6 +443,8 @@ impl State {
       instances,
       instance_buffer,
       depth_texture,
+      instances_to_render_start,
+      instances_to_render_end,
     }
   }
 
@@ -463,6 +470,41 @@ impl State {
 
   fn input(&mut self, event: &WindowEvent) -> bool {
     self.camera_controller.process_events(event);
+
+    match event {
+
+      WindowEvent::KeyboardInput {
+        input: KeyboardInput {
+            state: ElementState::Pressed,
+            virtual_keycode,
+            ..
+        },
+        ..
+      } => if virtual_keycode == &Some(VirtualKeyCode::Key1) {
+        let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
+        let range_end_max = self.instances.len() as u32;
+        let range_start_max = range_end_max - range_increment_amount;
+
+        let range_end_min = range_increment_amount;
+        let range_start_min = 0;
+
+        if self.instances_to_render_start + range_increment_amount <= range_start_max {
+          self.instances_to_render_start += range_increment_amount;
+        } else {
+          self.instances_to_render_start = range_start_min;
+        }
+        if self.instances_to_render_end + range_increment_amount <= range_end_max {
+          self.instances_to_render_end += range_increment_amount;
+        } else {
+          self.instances_to_render_end = range_end_min;
+        }
+
+        return true;
+      },
+
+      _ => return false
+    };
+
     return false;
   }
 
@@ -540,7 +582,7 @@ impl State {
       render_pass.draw_indexed(
         0..self.cube_indices_count,
         0,
-        0..self.instances.len() as _,
+        self.instances_to_render_start..self.instances_to_render_end,
       );
     }
 
