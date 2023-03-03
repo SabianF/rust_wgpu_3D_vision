@@ -636,7 +636,7 @@ fn configure_instances(device: &wgpu::Device) -> (
         } else {
           cgmath::Quaternion::from_axis_angle(
             position.normalize(),
-            cgmath::Deg(45.0)
+            cgmath::Deg(0.0)
           )
         };
 
