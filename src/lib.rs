@@ -629,7 +629,6 @@ pub async fn run() {
           // Handle all other errors
           Err(e) => eprintln!("{:?}", e),
         }
-        state.window().request_redraw();
       }
 
       Event::MainEventsCleared => {
