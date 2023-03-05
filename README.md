@@ -15,22 +15,29 @@ If this works, then not only will the brain perceive true 3D volume vision, but 
 
 Since this is my very first Rust project, the major steps to accomplishing this are
 
-### Phase 1: Core functionality
+## Phase 1: Core functionality
 - [x] Creating a functional window
 - [x] Rendering a colour
 - [x] Rendering a 2D surface (~~square~~ triangle)
 - [x] Rendering a voxel (cube)
 - [x] Rendering a 3D volume containing multiple voxels
-- [ ] Flickering the voxels at 1 layer of voxels per frame
+- [x] Flickering the voxels at 1 layer of voxels per frame
 
-### Phase 2: 3D angle-viewing
+### Results
+- Expectation: Rendering will cause flicker fusion and brain to perceive true 3D volume
+- Measurement: Refresh rate of 60FPS insufficient for flicker fusion; voxels disappear from screen, flickering like old fluorescent lights
+- Evaluation:
+   - May need better hardware *(240Hz monitor, better GPU, better CPU)* to make progress on main hypothesis
+   - Will progress to phase 2, in the meantime
+
+## Phase 2: 3D angle-viewing
 - [ ] Adding the ability to rotate the 3D volume in 3-space
 - [ ] Ensuring all displayed voxels are fully visible at all times (voxels never obscure any part of any other voxels)
 
-### Phase 3: 4D angle-viewing
+## Phase 3: 4D angle-viewing
 - [ ] TBD
 
-### Phase 4: 4D objects
+## Phase 4: 4D objects
 - [ ] TBD
 
 # Updates
