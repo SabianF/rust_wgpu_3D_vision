@@ -63,4 +63,6 @@ Since this is my very first Rust project, the major steps to accomplishing this 
    - <img src="https://user-images.githubusercontent.com/58588133/222606065-34011ff6-2b57-482e-a42f-a08f6f93c0b9.gif" width="256" alt="rust_cubes_rotating" />
 1. **done**: rendering cubes on y-axis
    - <img src="https://user-images.githubusercontent.com/58588133/222637320-b5eb0d8c-1d07-441c-8985-70948e58d15a.gif" width="256" alt="volume_of_cubes_rotating" />
-1. todo: render voxels layer-by-layer
+1. **done**: render voxels layer-by-layer
+   - <img src="https://user-images.githubusercontent.com/58588133/222941633-0cb2f719-7e9e-4f4b-806b-17e22698331b.gif" width="256" alt="volume_of_cubes_refreshing" /> note: GIF does not represent framerate correctly
+1. todo: optimizing camera controls
