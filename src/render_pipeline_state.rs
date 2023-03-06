@@ -3,7 +3,7 @@ use wgpu::{RenderPipeline, Device, BindGroupLayout, SurfaceConfiguration, Buffer
 
 pub const NUM_INSTANCES_PER_ROW: u32 = 5;
 pub const NUM_INSTANCE_ROWS: u32 = 2;
-const INSTANCE_SPACING: cgmath::Vector3<f32> = cgmath::Vector3::new(
+const INSTANCES_OFFSET: cgmath::Vector3<f32> = cgmath::Vector3::new(
   NUM_INSTANCES_PER_ROW as f32 * 0.1,
   NUM_INSTANCE_ROWS as f32 * 0.1,
   NUM_INSTANCES_PER_ROW as f32 * 0.1,
@@ -189,10 +189,11 @@ impl RenderPipelineState {
         (0..NUM_INSTANCES_PER_ROW).flat_map(move |z| {
           (0..NUM_INSTANCES_PER_ROW).map(move |x| {
             let position = cgmath::Vector3 {
+              // Individual instance position offsets
               x: x as f32 * 0.2,
               y: y as f32 * 0.2,
               z: z as f32 * 0.2,
-            } - INSTANCE_SPACING;
+            } - INSTANCES_OFFSET;
   
             let rotation = if position.is_zero() {
               // this is needed so an object at (0, 0, 0) won't get scaled to zero
