@@ -3,14 +3,14 @@ use wgpu::{Buffer, Device, util::{DeviceExt, self}, BufferUsages};
 use crate::render_pipeline_state::Vertex;
 
 const CUBE_VERTICES: &[Vertex] = &[
-  Vertex { position: [-0.5, -0.5, 0.5 ], color: [0.0, 0.0, 0.0] }, // A: 0
-  Vertex { position: [0.5 , -0.5, 0.5 ], color: [0.0, 0.0, 0.5] }, // B: 1
-  Vertex { position: [0.5 , 0.5 , 0.5 ], color: [0.0, 0.5, 0.0] }, // C: 2
-  Vertex { position: [-0.5, 0.5 , 0.5 ], color: [0.0, 0.5, 0.5] }, // D: 3
-  Vertex { position: [-0.5, -0.5, -0.5], color: [0.5, 0.0, 0.0] }, // E: 4
-  Vertex { position: [0.5 , -0.5, -0.5], color: [0.5, 0.0, 0.5] }, // F: 5
-  Vertex { position: [0.5 , 0.5 , -0.5], color: [0.5, 0.5, 0.0] }, // G: 6
-  Vertex { position: [-0.5, 0.5 , -0.5], color: [0.5, 0.5, 0.5] }, // H: 7
+  Vertex { position: [-0.1, -0.1, 0.1 ], color: [0.0, 0.0, 0.0] }, // A: 0
+  Vertex { position: [0.1 , -0.1, 0.1 ], color: [0.0, 0.0, 0.5] }, // B: 1
+  Vertex { position: [0.1 , 0.1 , 0.1 ], color: [0.0, 0.5, 0.0] }, // C: 2
+  Vertex { position: [-0.1, 0.1 , 0.1 ], color: [0.0, 0.5, 0.5] }, // D: 3
+  Vertex { position: [-0.1, -0.1, -0.1], color: [0.5, 0.0, 0.0] }, // E: 4
+  Vertex { position: [0.1 , -0.1, -0.1], color: [0.5, 0.0, 0.5] }, // F: 5
+  Vertex { position: [0.1 , 0.1 , -0.1], color: [0.5, 0.5, 0.0] }, // G: 6
+  Vertex { position: [-0.1, 0.1 , -0.1], color: [0.5, 0.5, 0.5] }, // H: 7
 ];
 
 const CUBE_INDICES: &[u16] = &[
