@@ -57,35 +57,40 @@ pub async fn run() {
   );
 }
 
-fn detect_exit_request(g: &mut game_loop::GameLoop<GameState, game_loop::Time, Window>, event: &Event<()>) {
-    if g.game.handle_events(event) == false {
+fn detect_exit_request(
+  g: &mut game_loop::GameLoop<GameState,
+  game_loop::Time, Window>, event: &Event<()>,
+) {
+  if g.game.handle_events(event) == false {
     g.exit();
-          };
+  };
 }
 
-fn detect_change_framerate(g: &mut game_loop::GameLoop<GameState, game_loop::Time, Window>, event: &Event<()>) {
-    match event {
-        Event::WindowEvent {
-          event: WindowEvent::KeyboardInput {
-            input: KeyboardInput {
-              state: ElementState::Pressed,
-              virtual_keycode,
-              ..
-            },
-            ..
-          },
+fn detect_change_framerate(
+  g: &mut game_loop::GameLoop<GameState,
+  game_loop::Time, Window>, event: &Event<()>,
+) {
+  match event {
+    Event::WindowEvent {
+      event: WindowEvent::KeyboardInput {
+        input: KeyboardInput {
+          state: ElementState::Pressed,
+          virtual_keycode,
           ..
-        } => {
-          if virtual_keycode == &Some(VirtualKeyCode::Key1) {
-            g.set_updates_per_second(&g.updates_per_second - 10);
-          }
-
-      
-          if virtual_keycode == &Some(VirtualKeyCode::Key2) {
-            g.set_updates_per_second(&g.updates_per_second + 10);
-          }
-        }
-
-        _ => {}
+        },
+        ..
+      },
+      ..
+    } => {
+      if virtual_keycode == &Some(VirtualKeyCode::Key1) {
+        g.set_updates_per_second(&g.updates_per_second - 10);
       }
+
+      if virtual_keycode == &Some(VirtualKeyCode::Key2) {
+        g.set_updates_per_second(&g.updates_per_second + 10);
+      }
+    }
+
+    _ => {}
+  }
 }
