@@ -31,6 +31,19 @@ pub async fn run() {
     |g| {
       g.game.update();
 
+      if g.game.enable_voxel_flicker {
+        g.game.iterate_volume_plane_instances_to_render();
+      }
+
+      // Test code: remove this after done testing
+      let volumes_refreshed = g.game.volumes_refreshed as f32 / NUM_INSTANCE_ROWS as f32;
+      let new_title = &format!("Framerate: {} | Volumes refreshed: {:.0}", &g.updates_per_second, volumes_refreshed) as &str;
+      g.window.set_title(new_title);
+    },
+    |g| {
+      // This block updates faster than TARGET_FPS, which is not suitable
+      // for our current implementation of rendering voxel layers
+
       // We are rendering here, because this block updates at the speed of
       // TARGET_FPS, which is the speed we want to render layers of voxels
       // in order to utilize consistent flicker fusion for 3D volumes
@@ -38,15 +51,6 @@ pub async fn run() {
       if render_error {
         g.exit();
       };
-
-      // Test code: remove this after done testing
-      let volumes_refreshed = g.game.volumes_refreshed as f32 / NUM_INSTANCE_ROWS as f32;
-      let new_title = &format!("Framerate: {} | Volumes refreshed: {:.0}", &g.updates_per_second, volumes_refreshed) as &str;
-      g.window.set_title(new_title);
-    },
-    |_g| {
-      // This block updates faster than TARGET_FPS, which is not suitable
-      // for our current implementation of rendering voxel layers
     },
     |g, event| {
       detect_change_framerate(g, event);
