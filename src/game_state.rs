@@ -17,7 +17,6 @@ use crate::render_pipeline_state::Texture;
 use crate::render_state::RenderState;
 
 use crate::render_pipeline_state::NUM_INSTANCES_PER_ROW;
-use crate::render_pipeline_state::NUM_INSTANCE_ROWS;
 
 pub struct GameState {
   render_state: RenderState,
