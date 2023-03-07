@@ -1,8 +1,8 @@
 use cgmath::{Zero, Rotation3, InnerSpace};
 use wgpu::{RenderPipeline, Device, BindGroupLayout, SurfaceConfiguration, Buffer, util::DeviceExt};
 
-pub const NUM_INSTANCES_PER_ROW: u32 = 3;
-pub const NUM_INSTANCE_ROWS: u32 = 3;
+pub const NUM_INSTANCES_PER_ROW: u32 = 5;
+pub const NUM_INSTANCE_ROWS: u32 = 2;
 const INSTANCES_OFFSET: cgmath::Vector3<f32> = cgmath::Vector3::new(
   NUM_INSTANCES_PER_ROW as f32 * 0.1,
   NUM_INSTANCE_ROWS as f32 * 0.1,

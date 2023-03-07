@@ -24,7 +24,7 @@ pub struct GameState {
   render_pipeline_state: RenderPipelineState,
   cube_model: CubeModel,
   pub volumes_refreshed: u32,
-  pub enable_voxel_flicker: bool,
+  enable_voxel_flicker: bool,
 }
 
 impl GameState {
@@ -100,6 +100,10 @@ impl GameState {
 
     self.camera_state.camera_uniform
       .update_view_proj(&self.camera_state.camera);
+
+    if self.enable_voxel_flicker {
+      self.iterate_volume_plane_instances_to_render();
+    }
 
     self.render_state.queue.write_buffer(
       &self.camera_state.camera_buffer,
@@ -248,7 +252,7 @@ impl GameState {
     };
   }
 
-  pub fn iterate_volume_plane_instances_to_render(&mut self) {
+  fn iterate_volume_plane_instances_to_render(&mut self) {
     let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
     let range_end_max = self.render_pipeline_state.instances.len() as u32;
     let range_start_max = range_end_max - range_increment_amount;
