@@ -16,13 +16,11 @@ static TARGET_FPS: u32 = 60;
 pub async fn run() {
   env_logger::init();
 
-  let event_loop = EventLoop::new();
-
-  let window = Window::new(&event_loop)
-    .unwrap();
-  window.set_title("3D Vision Renderer");
-
-  let game_state = GameState::new(&window).await;
+  let (
+    event_loop,
+    window,
+    game_state,
+  ) = game_init().await;
 
   game_loop(
     event_loop,
@@ -54,6 +52,26 @@ pub async fn run() {
       detect_change_framerate(g, event);
       detect_exit_request(g, event);
     },
+  );
+}
+
+async fn game_init() -> (
+  EventLoop<()>,
+  Window,
+  GameState,
+) {
+  let event_loop = EventLoop::new();
+
+  let window = Window::new(&event_loop)
+  .unwrap();
+  window.set_title("3D Vision Renderer");
+
+  let game_state = GameState::new(&window).await;
+  
+  return (
+    event_loop,
+    window,
+    game_state,
   );
 }
 
