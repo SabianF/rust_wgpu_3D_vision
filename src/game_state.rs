@@ -198,7 +198,7 @@ impl GameState {
       );
       render_pass.set_vertex_buffer(
         1,
-        self.render_pipeline_state.instance_buffer.slice(..),
+        self.render_pipeline_state.instance_buffer.buffer.slice(..),
       );
       render_pass.set_index_buffer(
         self.cube_model.cube_index_buffer.slice(..),
@@ -254,7 +254,7 @@ impl GameState {
 
   fn iterate_volume_plane_instances_to_render(&mut self) {
     let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
-    let range_end_max = self.render_pipeline_state.instances.len() as u32;
+    let range_end_max = self.render_pipeline_state.instance_buffer.instances.len() as u32;
     let range_start_max = range_end_max - range_increment_amount;
 
     let range_end_min = range_increment_amount;

@@ -11,8 +11,7 @@ const INSTANCES_OFFSET: cgmath::Vector3<f32> = cgmath::Vector3::new(
 
 pub struct RenderPipelineState {
   pub render_pipeline : RenderPipeline,
-  pub instances       : Vec<Instance>,
-  pub instance_buffer : Buffer,
+  pub instance_buffer : InstanceBuffer,
   pub depth_texture   : Texture,
   pub instances_to_render_start: u32,
   pub instances_to_render_end: u32,
@@ -43,6 +42,82 @@ pub struct InstanceRaw {
   pub model: [[f32; 4]; 4],
 }
 
+pub struct InstanceBuffer {
+  pub instances : Vec<Instance>,
+  pub buffer    : Buffer,
+}
+
+impl InstanceBuffer {
+  pub fn new(device: &Device) -> Self {
+    let (
+      instances,
+      buffer,
+    ) = Self::configure_instances(device);
+
+    return Self {
+      instances,
+      buffer,
+    };
+  }
+
+  fn configure_instances(device: &Device) -> (
+    Vec<Instance>,
+    Buffer,
+  ) {
+    let instances =
+      (0..NUM_INSTANCE_ROWS).flat_map(|y| {
+        (0..NUM_INSTANCES_PER_ROW).flat_map(move |z| {
+          (0..NUM_INSTANCES_PER_ROW).map(move |x| {
+            let position = cgmath::Vector3 {
+              // Individual instance position offsets
+              x: x as f32 * 0.2,
+              y: y as f32 * 0.2,
+              z: z as f32 * 0.2,
+            } - INSTANCES_OFFSET;
+  
+            let rotation = if position.is_zero() {
+              // this is needed so an object at (0, 0, 0) won't get scaled to zero
+              // as Quaternions can effect scale if they're not created correctly
+              cgmath::Quaternion::from_axis_angle(
+                cgmath::Vector3::unit_z(),
+                cgmath::Deg(0.0)
+              )
+            } else {
+              cgmath::Quaternion::from_axis_angle(
+                position.normalize(),
+                cgmath::Deg(0.0)
+              )
+            };
+  
+            return Instance {
+              position,
+              rotation,
+            };
+          })
+        })
+      })
+      .collect::<Vec<_>>();
+  
+    let instance_data = instances
+      .iter()
+      .map(Instance::to_raw)
+      .collect::<Vec<_>>();
+  
+    let instance_buffer = device.create_buffer_init(
+      &wgpu::util::BufferInitDescriptor {
+        label   : Some("Instance buffer"),
+        contents: bytemuck::cast_slice(&instance_data),
+        usage   : wgpu::BufferUsages::VERTEX,
+      },
+    );
+  
+    return (
+      instances,
+      instance_buffer,
+    );
+  }
+}
+
 pub struct Texture {
   pub texture : wgpu::Texture,
   pub view    : wgpu::TextureView,
@@ -63,23 +138,18 @@ impl RenderPipelineState {
       config,
     );
 
-    let (
-      instances,
-      instance_buffer,
-    ) = Self::configure_instances(device);
-
     let depth_texture = Texture::create_depth_texture(
       device,
       config,
       "depth_texture",
     );
 
+    let instance_buffer = InstanceBuffer::new(&device);
     let instances_to_render_start = 0;
     let instances_to_render_end = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
 
     return Self {
       render_pipeline,
-      instances,
       instance_buffer,
       depth_texture,
       instances_to_render_start,
@@ -178,63 +248,6 @@ impl RenderPipelineState {
     );
     
     return render_pipeline;
-  }
-
-  fn configure_instances(device: &Device) -> (
-    Vec<Instance>,
-    Buffer,
-  ) {
-    let instances =
-      (0..NUM_INSTANCE_ROWS).flat_map(|y| {
-        (0..NUM_INSTANCES_PER_ROW).flat_map(move |z| {
-          (0..NUM_INSTANCES_PER_ROW).map(move |x| {
-            let position = cgmath::Vector3 {
-              // Individual instance position offsets
-              x: x as f32 * 0.2,
-              y: y as f32 * 0.2,
-              z: z as f32 * 0.2,
-            } - INSTANCES_OFFSET;
-  
-            let rotation = if position.is_zero() {
-              // this is needed so an object at (0, 0, 0) won't get scaled to zero
-              // as Quaternions can effect scale if they're not created correctly
-              cgmath::Quaternion::from_axis_angle(
-                cgmath::Vector3::unit_z(),
-                cgmath::Deg(0.0)
-              )
-            } else {
-              cgmath::Quaternion::from_axis_angle(
-                position.normalize(),
-                cgmath::Deg(0.0)
-              )
-            };
-  
-            return Instance {
-              position,
-              rotation,
-            };
-          })
-        })
-      })
-      .collect::<Vec<_>>();
-  
-    let instance_data = instances
-      .iter()
-      .map(Instance::to_raw)
-      .collect::<Vec<_>>();
-  
-    let instance_buffer = device.create_buffer_init(
-      &wgpu::util::BufferInitDescriptor {
-        label   : Some("Instance buffer"),
-        contents: bytemuck::cast_slice(&instance_data),
-        usage   : wgpu::BufferUsages::VERTEX,
-      },
-    );
-  
-    return (
-      instances,
-      instance_buffer,
-    );
   }
 }
 
