@@ -2,8 +2,8 @@ use cgmath::{Vector3, Quaternion, InnerSpace, Zero, Rotation3, Deg, Matrix4};
 use wgpu::{Device, Buffer, util::{DeviceExt, BufferInitDescriptor}, BufferUsages};
 
 pub const NUM_INSTANCES_PER_ROW : u32 = 5;
-pub const NUM_INSTANCES_PER_COL : u32 = 5;
-pub const NUM_INSTANCE_PLANES   : u32 = 2;
+pub const NUM_INSTANCES_PER_COL : u32 = 10;
+pub const NUM_INSTANCE_PLANES   : u32 = 3;
 
 const INSTANCES_OFFSET: cgmath::Vector3<f32> = cgmath::Vector3::new(
   NUM_INSTANCES_PER_ROW as f32 * 0.1,
@@ -90,7 +90,12 @@ impl InstanceBuffer {
     let (
       instances,
       buffer,
-    ) = Self::configure_instances(device);
+    ) = Self::create_grid(
+      device,
+      Some(NUM_INSTANCES_PER_ROW),
+      Some(NUM_INSTANCE_PLANES),
+      Some(NUM_INSTANCES_PER_COL),
+    );
 
     return Self {
       instances,
@@ -98,14 +103,25 @@ impl InstanceBuffer {
     };
   }
 
-  fn configure_instances(device: &Device) -> (
+  /**
+   * x_max is left/right
+   * y_max is up/down
+   * z_max is forward/backward
+   * (x|y|z)_max must be > 0
+   */
+  fn create_grid(
+    device: &Device,
+    x_max: Option<u32>,
+    y_max: Option<u32>,
+    z_max: Option<u32>,
+  ) -> (
     Vec<Instance>,
     Buffer,
   ) {
     let instances =
-      (0..NUM_INSTANCE_PLANES).flat_map(|y| {
-        (0..NUM_INSTANCES_PER_COL).flat_map(move |z| {
-          (0..NUM_INSTANCES_PER_ROW).map(move |x| {
+      (0..y_max.unwrap_or(1)).flat_map(|y| {
+        (0..z_max.unwrap_or(1)).flat_map(move |z| {
+          (0..x_max.unwrap_or(1)).map(move |x| {
             let position = Vector3 {
               // Individual instance position offsets
               x: x as f32 * 0.2,
