@@ -12,11 +12,11 @@ use crate::WindowEvent;
 use crate::Window;
 use crate::camera_state::CameraState;
 use crate::cube_model::CubeModel;
+use crate::instance::NUM_INSTANCES_PER_COL;
+use crate::instance::NUM_INSTANCES_PER_ROW;
 use crate::render_pipeline_state::RenderPipelineState;
 use crate::render_pipeline_state::Texture;
 use crate::render_state::RenderState;
-
-use crate::render_pipeline_state::NUM_INSTANCES_PER_ROW;
 
 pub struct GameState {
   render_state: RenderState,
@@ -253,7 +253,7 @@ impl GameState {
   }
 
   fn iterate_volume_plane_instances_to_render(&mut self) {
-    let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_ROW;
+    let range_increment_amount = NUM_INSTANCES_PER_ROW * NUM_INSTANCES_PER_COL;
     let range_end_max = self.render_pipeline_state.instance_buffer.instances.len() as u32;
     let range_start_max = range_end_max - range_increment_amount;
 

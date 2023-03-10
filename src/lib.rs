@@ -7,9 +7,9 @@ mod render_state;
 mod camera_state;
 mod render_pipeline_state;
 mod cube_model;
+mod instance;
 
 use game_state::GameState;
-use render_pipeline_state::NUM_INSTANCE_ROWS;
 
 static TARGET_FPS: u32 = 60;
 
@@ -38,11 +38,6 @@ pub async fn run() {
       if render_error {
         g.exit();
       };
-
-      // Test code: remove this after done testing
-      let volumes_refreshed = g.game.volumes_refreshed as f32 / NUM_INSTANCE_ROWS as f32;
-      let new_title = &format!("Framerate: {} | Volumes refreshed: {:.0}", &g.updates_per_second, volumes_refreshed) as &str;
-      g.window.set_title(new_title);
     },
     |_g| {
       // This block updates faster than TARGET_FPS, which is not suitable
