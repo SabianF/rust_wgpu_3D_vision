@@ -1,8 +1,6 @@
 
-use game_loop::winit::{dpi::PhysicalSize};
+use game_loop::winit::{dpi::PhysicalSize, window::Window};
 use wgpu::{SurfaceConfiguration, Surface, Device, Queue};
-
-use crate::Window;
 
 pub struct RenderState {
   pub size    : PhysicalSize<u32>,
