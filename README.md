@@ -23,7 +23,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 - [x] Rendering a 3D volume containing multiple voxels
 - [x] Flickering the voxels at 1 plane of voxels per frame
 
-### Results
+### Phase 1 Results
 - Expectation: Rendering will cause flicker fusion and brain to perceive true 3D volume
 - Measurement: Refresh rate of 60FPS insufficient for flicker fusion; voxels disappear from screen, flickering like old fluorescent lights
 - Evaluation:
