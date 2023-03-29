@@ -23,6 +23,8 @@ cgmath = "0.18"
 env_logger = "0.10"
 # For keeping the updating of values independent from the CPU clock
 game-loop = { version = "*", features = ["winit"] }
+# For orbital camera usage
+glam = { version = "0.19.0", features = [ "bytemuck" ] }
 # For logging I guess
 log = "0.4"
 pollster = "0.2"

@@ -1,6 +1,9 @@
+use game_loop::winit::dpi::PhysicalPosition;
 use game_loop::winit::dpi::PhysicalSize;
+use game_loop::winit::event::DeviceEvent;
 use game_loop::winit::event::ElementState;
 use game_loop::winit::event::KeyboardInput;
+use game_loop::winit::event::MouseScrollDelta;
 use game_loop::winit::event::VirtualKeyCode;
 use wgpu::LoadOp;
 use wgpu::Operations;
@@ -10,7 +13,7 @@ use wgpu::TextureViewDescriptor;
 use crate::Event;
 use crate::WindowEvent;
 use crate::Window;
-use crate::camera_state::CameraState;
+use crate::camera::camera_state::CameraState;
 use crate::cube_model::CubeModel;
 use crate::instance::NUM_INSTANCES_PER_COL;
 use crate::instance::NUM_INSTANCES_PER_ROW;
@@ -25,13 +28,14 @@ pub struct GameState {
   cube_model: CubeModel,
   pub volumes_refreshed: u32,
   enable_voxel_flicker: bool,
+  mouse_left_pressed: bool,
 }
 
 impl GameState {
 
   pub async fn new(window: &Window) -> Self {
     let render_state = RenderState::new(&window).await;
-    let camera_state = CameraState::new(&render_state);
+    let camera_state = CameraState::new(&render_state.device, &window);
 
     let render_pipeline_state = RenderPipelineState::new(
       &render_state.device,
@@ -43,6 +47,7 @@ impl GameState {
 
     let counter = 0;
     let enable_voxel_flicker = false;
+    let mouse_left_pressed = false;
 
     return Self {
       render_state,
@@ -51,6 +56,7 @@ impl GameState {
       cube_model,
       volumes_refreshed: counter,
       enable_voxel_flicker,
+      mouse_left_pressed,
     }
   }
 
@@ -74,29 +80,101 @@ impl GameState {
     );
   }
 
-  pub fn input(&mut self, event: &WindowEvent) -> bool {
-    self.camera_state.camera_controller.process_events(event);
-    match event {
+  pub fn input(
+    &mut self,
+    event: &Event<()>,
+    window: &Window,
+  ) -> bool {
+    self.camera_state.camera_controller.process_events(
+      event,
+      window,
+      &mut self.camera_state.camera,
+    );
 
-      WindowEvent::KeyboardInput {
-        input: KeyboardInput {
-            state: ElementState::Pressed,
-            virtual_keycode: Some(VirtualKeyCode::Key0),
-            ..
-        },
+    match event {
+      Event::WindowEvent {
+        event: window_event,
         ..
-    } => {
-      self.enable_voxel_flicker = !self.enable_voxel_flicker;
-      return true;
-    },
+      } => {
+        match window_event {
+          WindowEvent::KeyboardInput {
+            input: KeyboardInput {
+              state: ElementState::Pressed,
+              virtual_keycode: Some(VirtualKeyCode::Key0),
+              ..
+            },
+            ..
+          } => {
+            self.enable_voxel_flicker = !self.enable_voxel_flicker;
+            return true;
+          },
+
+          _ => return false
+        }
+      },
+
+      Event::DeviceEvent {
+        event: device_event,
+        ..
+      } => {
+        match device_event {
+          DeviceEvent::Button {
+            // The Left Mouse Button on MacOS.
+            #[cfg(target_os = "macos")]
+            button: 0,
+            // The Left Mouse Button on all other platforms.
+            #[cfg(not(target_os = "macos"))]
+            button: 1,
+
+            state: mb_state,
+          } => {
+            self.mouse_left_pressed = *mb_state == ElementState::Pressed;
+            return true;
+          },
+
+          DeviceEvent::MouseMotion {
+            delta,
+          } => if self.mouse_left_pressed {
+            self.camera_state.camera.add_yaw(
+              -delta.0 as f32 * self.camera_state.camera_controller.rotate_speed
+            );
+            self.camera_state.camera.add_pitch(
+              delta.1 as f32 * self.camera_state.camera_controller.rotate_speed
+            );
+            return true;
+
+          } else {
+            return false;
+          },
+
+          DeviceEvent::MouseWheel {
+            delta,
+          } => {
+            let scroll_amount = -match delta {
+              MouseScrollDelta::LineDelta(_, scroll) => {
+                scroll * 1.0
+              },
+              MouseScrollDelta::PixelDelta(PhysicalPosition { y: scroll, .. }) => {
+                *scroll as f32
+              },
+            };
+
+            self.camera_state.camera.add_distance(
+              scroll_amount * self.camera_state.camera_controller.zoom_speed
+            );
+            return true;
+          },
+
+          _ => return false
+        }
+      },
 
       _ => return false
-    };
+    }
   }
 
   pub fn update(&mut self) {
-    self.camera_state.camera_controller
-      .update_camera(&mut self.camera_state.camera);
+    self.camera_state.camera.update();
 
     self.camera_state.camera_uniform
       .update_view_proj(&self.camera_state.camera);
@@ -216,21 +294,22 @@ impl GameState {
     return Ok(());
   }
 
-  pub fn handle_events (&mut self, event: &Event<()>) -> bool {
-    match event {
+  pub fn handle_events (
+    &mut self,
+    event: &Event<()>,
+    window: &Window,
+  ) -> bool {
+    let event_was_input = self.input(event, window);
+    if event_was_input {
+      return true;
+    }
 
+    match event {
       Event::WindowEvent {
           event,
           ..
       } => {
-
-        let event_was_input = self.input(event);
-        if event_was_input {
-          return true;
-        }
-
         match event {
-
           WindowEvent::CloseRequested => {
             return false;
           },

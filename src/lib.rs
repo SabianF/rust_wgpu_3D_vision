@@ -4,10 +4,11 @@ use game_loop::{winit::{event_loop::EventLoop, window::Window, event::{Event, Wi
 
 mod game_state;
 mod render_state;
-mod camera_state;
+mod camera;
 mod render_pipeline_state;
 mod cube_model;
 mod instance;
+mod extras;
 
 use game_state::GameState;
 
@@ -74,7 +75,7 @@ fn detect_exit_request(
   g: &mut game_loop::GameLoop<GameState,
   game_loop::Time, Window>, event: &Event<()>,
 ) {
-  if g.game.handle_events(event) == false {
+  if g.game.handle_events(event, &g.window) == false {
     g.exit();
   };
 }
