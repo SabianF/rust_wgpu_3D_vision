@@ -10,18 +10,18 @@ pub struct CameraController {
 
 impl CameraController {
   pub fn new(rotate_speed: f32, zoom_speed: f32) -> Self {
-      Self {
-          rotate_speed,
-          zoom_speed,
-          is_drag_rotate: false,
-      }
+    Self {
+      rotate_speed,
+      zoom_speed,
+      is_drag_rotate: false,
+    }
   }
 
   pub fn process_events(
-      &mut self,
-      event: &Event<()>,
-      window: &Window,
-      camera: &mut OrbitCamera,
+    &mut self,
+    event: &Event<()>,
+    window: &Window,
+    camera: &mut OrbitCamera,
   ) {
     match event {
       Event::DeviceEvent {
