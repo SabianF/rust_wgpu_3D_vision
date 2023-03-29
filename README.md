@@ -31,7 +31,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
    - Will progress to phase 2, in the meantime
 
 ## Phase 2: 3D angle-viewing
-- [ ] Adding the ability to rotate the 3D volume in 3-space
+- [x] Adding the ability to rotate the 3D volume in 3-space
 - [ ] Ensuring all displayed voxels are fully visible at all times (voxels never obscure any part of any other voxels)
 
 ## Phase 3: 4D angle-viewing
@@ -65,4 +65,5 @@ Since this is my very first Rust project, the major steps to accomplishing this 
    - <img src="https://user-images.githubusercontent.com/58588133/222637320-b5eb0d8c-1d07-441c-8985-70948e58d15a.gif" width="256" alt="volume_of_cubes_rotating" />
 1. **done**: render voxels layer-by-layer
    - <img src="https://user-images.githubusercontent.com/58588133/222941633-0cb2f719-7e9e-4f4b-806b-17e22698331b.gif" width="256" alt="volume_of_cubes_refreshing" /> note: GIF does not represent framerate correctly
-1. todo: optimizing camera controls
+1. **done**: optimizing camera controls; used [FrankenApps wgpu cube code](https://github.com/FrankenApps/wgpu_cube) as reference
+1. todo: iterating through all visible voxels instead of plane-by-plane
