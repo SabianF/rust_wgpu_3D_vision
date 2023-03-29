@@ -21,7 +21,7 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 - [x] Rendering a 2D surface (~~square~~ triangle)
 - [x] Rendering a voxel (cube)
 - [x] Rendering a 3D volume containing multiple voxels
-- [x] Flickering the voxels at 1 layer of voxels per frame
+- [x] Flickering the voxels at 1 plane of voxels per frame
 
 ### Results
 - Expectation: Rendering will cause flicker fusion and brain to perceive true 3D volume
