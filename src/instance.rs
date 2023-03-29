@@ -1,8 +1,8 @@
 use cgmath::{Vector3, Quaternion, InnerSpace, Zero, Rotation3, Deg, Matrix4};
 use wgpu::{Device, Buffer, util::{DeviceExt, BufferInitDescriptor}, BufferUsages};
 
-pub const NUM_INSTANCES_PER_ROW : u32 = 5;
-pub const NUM_INSTANCES_PER_COL : u32 = 10;
+pub const NUM_INSTANCES_PER_ROW : u32 = 3;
+pub const NUM_INSTANCES_PER_COL : u32 = 3;
 pub const NUM_INSTANCE_PLANES   : u32 = 3;
 
 const INSTANCES_OFFSET: cgmath::Vector3<f32> = cgmath::Vector3::new(
