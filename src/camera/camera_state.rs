@@ -28,8 +28,8 @@ impl CameraState {
     camera.bounds.min_distance = Some(1.1);
 
     let camera_controller = CameraController::new(
-      0.025,
-      0.6,
+      0.005,
+      0.10,
     );
 
     let mut camera_uniform = CameraUniform::default();
