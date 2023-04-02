@@ -66,4 +66,6 @@ Since this is my very first Rust project, the major steps to accomplishing this 
 1. **done**: render voxels layer-by-layer
    - <img src="https://user-images.githubusercontent.com/58588133/222941633-0cb2f719-7e9e-4f4b-806b-17e22698331b.gif" width="256" alt="volume_of_cubes_refreshing" /> note: GIF does not represent framerate correctly
 1. **done**: optimizing camera controls; used [FrankenApps wgpu cube code](https://github.com/FrankenApps/wgpu_cube) as reference
+   - <img src="https://user-images.githubusercontent.com/58588133/229334603-1520ec0b-a4b1-4882-abc0-e9ba2605e733.gif" /> note: GIF still does not represent framerate correctly
+
 1. todo: iterating through all visible voxels instead of plane-by-plane
