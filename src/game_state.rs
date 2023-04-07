@@ -26,7 +26,6 @@ pub struct GameState {
   camera_state: CameraState,
   render_pipeline_state: RenderPipelineState,
   cube_model: CubeModel,
-  pub volumes_refreshed: u32,
   enable_voxel_flicker: bool,
   mouse_left_pressed: bool,
 }
@@ -45,7 +44,6 @@ impl GameState {
 
     let cube_model = CubeModel::new(&render_state.device);
 
-    let counter = 0;
     let enable_voxel_flicker = false;
     let mouse_left_pressed = false;
 
@@ -54,7 +52,6 @@ impl GameState {
       camera_state,
       render_pipeline_state,
       cube_model,
-      volumes_refreshed: counter,
       enable_voxel_flicker,
       mouse_left_pressed,
     }
@@ -188,8 +185,6 @@ impl GameState {
       0,
       bytemuck::cast_slice(&[self.camera_state.camera_uniform])
     );
-
-    self.volumes_refreshed += 1;
   }
 
   /**
