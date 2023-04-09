@@ -1,6 +1,6 @@
 use wgpu::{Buffer, Device, util::{DeviceExt, self}, BufferUsages};
 
-use crate::render_pipeline_state::Vertex;
+use crate::core::presentation::states::render_pipeline_state::Vertex;
 
 const CUBE_VERTICES: &[Vertex] = &[
   Vertex { position: [-0.1, -0.1, 0.1 ], color: [0.0, 0.0, 0.0] }, // A: 0

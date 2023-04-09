@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use game_loop::{game_loop, winit::{event_loop::EventLoop, window::Window, event::{Event, WindowEvent, KeyboardInput, ElementState, VirtualKeyCode}}};
-use rust_wgpu_3D_vision::game_state::GameState;
+use rust_wgpu_3D_vision::core::presentation::states::game_state::GameState;
 
 static TARGET_FPS: u32 = 60;
 

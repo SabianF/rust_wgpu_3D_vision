@@ -13,13 +13,13 @@ use wgpu::Operations;
 use wgpu::SurfaceError;
 use wgpu::TextureViewDescriptor;
 
-use crate::camera::camera_state::CameraState;
-use crate::cube_model::CubeModel;
+use crate::camera::presentation::states::camera_state::CameraState;
 use crate::instance::NUM_INSTANCES_PER_COL;
 use crate::instance::NUM_INSTANCES_PER_ROW;
-use crate::render_pipeline_state::RenderPipelineState;
-use crate::render_pipeline_state::Texture;
-use crate::render_state::RenderState;
+use crate::core::domain::entities::cube_model::CubeModel;
+use crate::core::presentation::states::render_pipeline_state::RenderPipelineState;
+use crate::core::presentation::states::render_pipeline_state::Texture;
+use crate::core::presentation::states::render_state::RenderState;
 
 pub struct GameState {
   render_state: RenderState,

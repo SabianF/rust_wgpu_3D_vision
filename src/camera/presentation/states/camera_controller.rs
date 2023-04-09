@@ -1,6 +1,6 @@
 use game_loop::winit::{event::{DeviceEvent, ElementState, MouseScrollDelta, Event}, window::Window, dpi::PhysicalPosition};
 
-use super::orbit_camera::OrbitCamera;
+use crate::camera::domain::entities::orbit_camera::OrbitCamera;
 
 pub struct CameraController {
   pub rotate_speed: f32,

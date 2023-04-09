@@ -2,7 +2,9 @@ use game_loop::winit::window::Window;
 use glam::Vec3;
 use wgpu::{Buffer, BindGroupLayout, Device, util::DeviceExt, BindGroup};
 
-use super::{camera::{CameraUniform}, orbit_camera::OrbitCamera, camera_controller::CameraController};
+use crate::camera::domain::entities::camera::CameraUniform;
+use crate::camera::domain::entities::orbit_camera::OrbitCamera;
+use crate::camera::presentation::states::camera_controller::CameraController;
 
 pub struct CameraState {
   pub camera                  : OrbitCamera,

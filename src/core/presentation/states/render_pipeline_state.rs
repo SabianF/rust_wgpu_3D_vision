@@ -62,7 +62,7 @@ impl RenderPipelineState {
     config: &SurfaceConfiguration,
   ) -> RenderPipeline {
     let shader = device.create_shader_module(
-      wgpu::include_wgsl!("shader.wgsl"),
+      wgpu::include_wgsl!("../../data/sources/shader.wgsl"),
     );
   
     let render_pipeline_layout = device.create_pipeline_layout(
